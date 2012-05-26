@@ -1,4 +1,4 @@
-# cascading-avro
+# cascading.avro-scheme
 
 Cascading scheme for reading and writing data serialized using Apache Avro. This project provides several
 schemes that work off an Avro record schema.
@@ -11,7 +11,7 @@ field names and types.
 The current implementation supports all primitive types, byte arrays (including fixed), as well as, union of null
 and another supported type.
 
-# cascading-avro-maven-plugin
+# cascading.avro-maven-plugin
 
 An Apache Maven plugin that generates classes with field name constants based on Avro record schema. This plugin
 is similar to standard Avro schema plugin used to generate specific objects for Avro records. For The plugin names
