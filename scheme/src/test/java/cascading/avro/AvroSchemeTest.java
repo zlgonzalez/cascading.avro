@@ -38,7 +38,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
-import cascading.avro.AvroScheme;
 import cascading.flow.hadoop.HadoopFlowProcess;
 import cascading.tap.hadoop.Lfs;
 import cascading.tuple.Fields;
@@ -74,10 +73,12 @@ public class AvroSchemeTest {
 
         aList.add("0");
         aList.add("1");
-        write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
-                3.0, 4.0F, new BytesWritable(new byte[] { 1, 2, 3 }),
-                new BytesWritable(new byte[16]), null, "test-string", aList,
-                aMap)));
+        final BytesWritable bytesWritable = new BytesWritable(new byte[16]);
+        final BytesWritable bytesWritable2 = new BytesWritable(new byte[] { 1,
+                2, 3 });
+        final Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2,
+                bytesWritable, null, "test-string", aList, aMap);
+        write(scheme, collector, new TupleEntry(fields, tuple));
         write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
                 3.0, 4.0F, new BytesWritable(new byte[0]), new BytesWritable(
                         new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4,
@@ -95,10 +96,8 @@ public class AvroSchemeTest {
         assertEquals(3.0, readEntry1.getDouble("aDouble"), 0.01);
         assertEquals(4.0F, readEntry1.getFloat("aFloat"), 0.01);
         assertEquals("test-string", readEntry1.get("aString"));
-        assertEquals(new BytesWritable(new byte[] { 1, 2, 3 }),
-                readEntry1.getObject("aBytes"));
-        assertEquals(new BytesWritable(new byte[16]),
-                readEntry1.getObject("aFixed"));
+        assertEquals(bytesWritable2, readEntry1.getObject("aBytes"));
+        assertEquals(bytesWritable, readEntry1.getObject("aFixed"));
         assertEquals("0", ((List) readEntry1.getObject("aList")).get(0)
                 .toString());
         assertEquals(1,

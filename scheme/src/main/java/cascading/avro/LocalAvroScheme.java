@@ -76,6 +76,14 @@ public class LocalAvroScheme
     public LocalAvroScheme() {
     }
 
+    /**
+     * @param fields
+     * @param types
+     */
+    public LocalAvroScheme(Fields fields, Class[] types) {
+        super(fields, types);
+    }
+
     @Override
     public void sourcePrepare(FlowProcess<Properties> process,
             SourceCall<DataFileStream<Record>, InputStream> sourceCall)

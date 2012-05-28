@@ -27,8 +27,11 @@ import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.mapred.AvroInputFormat;
 import org.apache.avro.mapred.AvroJob;
+import org.apache.avro.mapred.AvroKey;
+import org.apache.avro.mapred.AvroKeyComparator;
 import org.apache.avro.mapred.AvroOutputFormat;
 import org.apache.avro.mapred.AvroSerialization;
+import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapred.AvroWrapper;
 import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.hadoop.conf.Configuration;
@@ -83,16 +86,33 @@ public class AvroScheme
     public AvroScheme() {
     }
 
+    /**
+     * @param fields
+     * @param classes
+     */
+    public AvroScheme(Fields fields, Class[] types) {
+        super(fields, types);
+    }
+
+    /**
+     * @param string
+     * @param fields
+     * @param types
+     */
+    public AvroScheme(String recordName, Fields fields, Class<?>[] types) {
+        super(recordName, fields, types);
+    }
+
     @Override
     public void sourceConfInit(
             FlowProcess<JobConf> process,
             Tap<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>> tap,
             JobConf conf) {
+        conf.setInputFormat(AvroInputFormat.class);
+        addAvroSerialization(conf);
         if (dataSchema == null)
             retrieveSchema(process, tap);
         conf.set(AvroJob.INPUT_SCHEMA, dataSchema.toString());
-        conf.setInputFormat(AvroInputFormat.class);
-        addAvroSerialization(conf);
     }
 
     @Override
@@ -116,10 +136,15 @@ public class AvroScheme
             FlowProcess<JobConf> process,
             Tap<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>> tap,
             JobConf conf) {
+
+        conf.setOutputKeyComparatorClass(AvroKeyComparator.class);
+        conf.setMapOutputKeyClass(AvroKey.class);
+        conf.setMapOutputValueClass(AvroValue.class);
+
         conf.set(AvroJob.OUTPUT_SCHEMA, dataSchema.toString());
         conf.setOutputFormat(AvroOutputFormat.class);
         conf.setOutputKeyClass(AvroWrapper.class);
-
+        addAvroSerialization(conf);
         // set compression
         AvroOutputFormat.setDeflateLevel(conf, 6);
         AvroJob.setOutputCodec(conf, DataFileConstants.DEFLATE_CODEC);
