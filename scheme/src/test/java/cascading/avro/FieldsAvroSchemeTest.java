@@ -1,23 +1,17 @@
 /*
- Copyright (c) 2008 Sven Duzont sven.duzont@gmail.com> All rights reserved.
-
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"),
- to deal in the Software without restriction, including without limitation
- the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is furnished
- to do so, subject to the following conditions: The above copyright notice
- and this permission notice shall be included in all
- copies or substantial portions of the Software.
-
- THE SOFTWARE IS PROVIDED "AS IS",
- WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED
- TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
- PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS
- OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * Copyright (c) 2012 MaxPoint Interactive, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package cascading.avro;
@@ -123,11 +117,12 @@ public class FieldsAvroSchemeTest {
         // Create a scheme that tests each of the supported types
 
         final Fields testFields = new Fields("anInt", "aLong", "aBoolean",
-                "aDouble", "aFloat", "aString", "aBytes", "aList", "aMap");
+                "aDouble", "aFloat", "aString", "aBytes", "aList", "aMap",
+                "anEnum");
         final Class<?>[] schemeTypes = { Integer.class, Long.class,
                 Boolean.class, Double.class, Float.class, String.class,
                 BytesWritable.class, List.class, Long.class, Map.class,
-                String.class };
+                String.class, TestEnum.class };
         final String in = outDir + "testRoundTrip/in";
         final String out = outDir + "testRoundTrip/out";
         final String verifyout = outDir + "testRoundTrip/verifyout";
@@ -169,7 +164,7 @@ public class FieldsAvroSchemeTest {
 
         t.add(mapTuple);
 
-        // addToTuple(t, TestEnum.ONE);
+        addToTuple(t, TestEnum.ONE);
         write.add(t);
 
         t = new Tuple();
@@ -182,7 +177,7 @@ public class FieldsAvroSchemeTest {
         addToTuple(t, new byte[] { 0, 1 });
         t.add(new Tuple(0L, 1L));
         t.add(new Tuple("key0", "value-0", "key1", "value-1"));
-        // addToTuple(t, TestEnum.TWO);
+        addToTuple(t, TestEnum.TWO);
         write.add(t);
 
         write.close();
@@ -229,8 +224,8 @@ public class FieldsAvroSchemeTest {
             assertEquals(i, te.getDouble("aDouble"), 0.0001);
             assertEquals(i, te.getFloat("aFloat"), 0.0001);
             assertEquals("" + i, te.getString("aString"));
-            // assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO,
-            // TestEnum.valueOf(te.getString("anEnum")));
+            assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO,
+                    TestEnum.valueOf(te.getString("anEnum")));
 
             int bytesLength = ((BytesWritable) te.getObject("aBytes"))
                     .getLength();

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2012 MaxPoint Interactive, Inc. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package cascading.avro;
 
 import java.io.Serializable;
@@ -8,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericEnumSymbol;
 import org.apache.hadoop.io.BytesWritable;
 
 import cascading.tuple.Fields;
@@ -16,34 +31,6 @@ import cascading.tuple.Fields;
 class AvroHelper implements Serializable {
 
     private static final long serialVersionUID = -7610828460324010725L;
-
-    /**
-     * Helper class used to save an Enum name in a type that Avro requires for
-     * serialization.
-     */
-    static class CascadingEnumSymbol implements GenericEnumSymbol {
-
-        private final String name;
-
-        private CascadingEnumSymbol(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.apache.avro.generic.GenericContainer#getSchema()
-         */
-        @Override
-        public Schema getSchema() {
-            return null;
-        }
-    }
 
     private static final String RECORD_NAME = "CascadingAvroSchema";
 
@@ -123,7 +110,7 @@ class AvroHelper implements Serializable {
             for (Object name : names) {
                 enumNames.add(name.toString());
             }
-            return Schema.createEnum(types[0].getName(), null, null, enumNames);
+            return Schema.createEnum(clazz.getName(), null, null, enumNames);
         } else {
             return Schema.create(avroType);
         }

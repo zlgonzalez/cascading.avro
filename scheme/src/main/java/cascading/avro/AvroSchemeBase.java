@@ -127,6 +127,9 @@ public abstract class AvroSchemeBase<Config, Input, Output, SourceContext, SinkC
                         schema);
                 return new FieldType(union, true, field.pos(), schema,
                         subTypeField);
+            } else if (union == Type.ENUM) {
+                final Schema schema2 = schema.getTypes().get(1);
+                return new FieldType(union, true, field.pos(), schema2);
             }
             return new FieldType(union, true, field.pos(), schema);
 
@@ -327,6 +330,8 @@ public abstract class AvroSchemeBase<Config, Input, Output, SourceContext, SinkC
             return toAvroArray(val, typeInfo.subType);
         case MAP:
             return toAvroMap(val, typeInfo.subType);
+        case ENUM:
+            return new GenericData.EnumSymbol(typeInfo.schema, (String) val);
         }
         return val;
     }
