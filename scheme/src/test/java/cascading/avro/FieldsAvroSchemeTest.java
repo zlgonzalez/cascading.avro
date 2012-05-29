@@ -20,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,11 +29,7 @@ import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
-import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
-import org.apache.avro.generic.GenericDatumWriter;
-import org.apache.avro.io.Encoder;
-import org.apache.avro.io.EncoderFactory;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.mapred.JobConf;
 import org.junit.Before;
@@ -112,52 +107,6 @@ public class FieldsAvroSchemeTest {
             fail("Exception should be thrown as array type isn't a primitive");
         } catch (Exception e) {
         }
-
-    }
-
-    @SuppressWarnings("serial")
-    @Test
-    public void testSinkLongArray() throws Exception {
-
-        // Create a scheme that tests each of the supported types
-
-        final Fields testFields = new Fields("aList");
-        final Class<?>[] schemeTypes = { List.class, Long.class };
-        final String in = outDir + "testRoundTrip/in";
-        final String out = outDir + "testRoundTrip/out";
-        // Create a sequence file with the appropriate tuples
-        Lfs lfsSource = new Lfs(new SequenceFile(testFields), in,
-                SinkMode.REPLACE);
-
-        TupleEntryCollector write = lfsSource
-                .openForWrite(new HadoopFlowProcess(new JobConf()));
-        Tuple t = new Tuple();
-
-        List<Long> arrayOfLongs = new ArrayList<Long>() {
-
-            {
-                add(0L);
-            }
-        };
-        t.add(createList(arrayOfLongs));
-
-        // AvroScheme.addToTuple(t, TestEnum.ONE);
-        write.add(t);
-
-        t = new Tuple();
-        t.add(new Tuple(0L, 1L));
-        // AvroScheme.addToTuple(t, TestEnum.TWO);
-        write.add(t);
-
-        write.close();
-        // Now read from the results, and write to an Avro file.
-        Pipe writePipe = new Pipe("tuples to avro");
-
-        Tap avroSink = new Lfs(new AvroScheme(testFields, schemeTypes), out);
-        Flow flow = new HadoopFlowConnector().connect(lfsSource, avroSink,
-                writePipe);
-        flow.complete();
-        flow.cleanup();
 
     }
 
@@ -533,28 +482,4 @@ public class FieldsAvroSchemeTest {
         return schema.toString();
     }
 
-    @Test
-    public void testWriteNullableEnum() throws IOException {
-        Schema.Parser p = new Schema.Parser();
-        Schema genderSchema = p
-                .parse("{" + "\"type\": \"enum\"," + "\"name\": \"Gender\","
-                        + "\"symbols\": [\"M\", \"F\"]" + "}");
-        Schema fooSchema = p.parse("{" + "\"type\" : \"record\","
-                + "\"name\" : \"Foo\"," + "\"fields\" : ["
-                + "{\"type\" : [\"Gender\", \"null\"], \"name\" : \"gender\" }"
-                + "]}");
-
-        GenericData.Record foo = new GenericData.Record(fooSchema);
-
-        foo.put(0, new GenericData.EnumSymbol(genderSchema, "M"));
-
-        GenericDatumWriter<GenericData.Record> w = new GenericDatumWriter<GenericData.Record>(
-                fooSchema);
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        Encoder e = EncoderFactory.get().binaryEncoder(baos, null);
-
-        w.write(foo, e);
-
-    }
 }
