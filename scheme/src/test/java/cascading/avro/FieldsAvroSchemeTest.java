@@ -26,6 +26,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -35,7 +36,11 @@ import java.util.Map;
 
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
+import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericDatumWriter;
+import org.apache.avro.io.Encoder;
+import org.apache.avro.io.EncoderFactory;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.mapred.JobConf;
 import org.junit.Before;
@@ -116,6 +121,52 @@ public class FieldsAvroSchemeTest {
 
     }
 
+    @SuppressWarnings("serial")
+    @Test
+    public void testSinkLongArray() throws Exception {
+
+        // Create a scheme that tests each of the supported types
+
+        final Fields testFields = new Fields("aList");
+        final Class<?>[] schemeTypes = { List.class, Long.class };
+        final String in = outDir + "testRoundTrip/in";
+        final String out = outDir + "testRoundTrip/out";
+        // Create a sequence file with the appropriate tuples
+        Lfs lfsSource = new Lfs(new SequenceFile(testFields), in,
+                SinkMode.REPLACE);
+
+        TupleEntryCollector write = lfsSource
+                .openForWrite(new HadoopFlowProcess(new JobConf()));
+        Tuple t = new Tuple();
+
+        List<Long> arrayOfLongs = new ArrayList<Long>() {
+
+            {
+                add(0L);
+            }
+        };
+        t.add(createList(arrayOfLongs));
+
+        // AvroScheme.addToTuple(t, TestEnum.ONE);
+        write.add(t);
+
+        t = new Tuple();
+        t.add(new Tuple(0L, 1L));
+        // AvroScheme.addToTuple(t, TestEnum.TWO);
+        write.add(t);
+
+        write.close();
+        // Now read from the results, and write to an Avro file.
+        Pipe writePipe = new Pipe("tuples to avro");
+
+        Tap avroSink = new Lfs(new AvroScheme(testFields, schemeTypes), out);
+        Flow flow = new HadoopFlowConnector().connect(lfsSource, avroSink,
+                writePipe);
+        flow.complete();
+        flow.cleanup();
+
+    }
+
     @SuppressWarnings({ "serial", "rawtypes", "unchecked" })
     @Test
     public void testRoundTrip() throws Exception {
@@ -123,11 +174,12 @@ public class FieldsAvroSchemeTest {
         // Create a scheme that tests each of the supported types
 
         final Fields testFields = new Fields("anInt", "aLong", "aBoolean",
-                "aDouble", "aFloat", "aString", "aBytes", "aList", "aMap");
+                "aDouble", "aFloat", "aString", "aBytes", "aList", "aMap",
+                "anEnum");
         final Class<?>[] schemeTypes = { Integer.class, Long.class,
                 Boolean.class, Double.class, Float.class, String.class,
                 BytesWritable.class, List.class, Long.class, Map.class,
-                String.class };
+                String.class, TestEnum.class };
         final String in = outDir + "testRoundTrip/in";
         final String out = outDir + "testRoundTrip/out";
         final String verifyout = outDir + "testRoundTrip/verifyout";
@@ -169,7 +221,7 @@ public class FieldsAvroSchemeTest {
 
         t.add(mapTuple);
 
-        // addToTuple(t, TestEnum.ONE);
+        addToTuple(t, TestEnum.ONE);
         write.add(t);
 
         t = new Tuple();
@@ -182,7 +234,7 @@ public class FieldsAvroSchemeTest {
         addToTuple(t, new byte[] { 0, 1 });
         t.add(new Tuple(0L, 1L));
         t.add(new Tuple("key0", "value-0", "key1", "value-1"));
-        // addToTuple(t, TestEnum.TWO);
+        addToTuple(t, TestEnum.TWO);
         write.add(t);
 
         write.close();
@@ -229,8 +281,8 @@ public class FieldsAvroSchemeTest {
             assertEquals(i, te.getDouble("aDouble"), 0.0001);
             assertEquals(i, te.getFloat("aFloat"), 0.0001);
             assertEquals("" + i, te.getString("aString"));
-            // assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO,
-            // TestEnum.valueOf(te.getString("anEnum")));
+            assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO,
+                    TestEnum.valueOf(te.getString("anEnum")));
 
             int bytesLength = ((BytesWritable) te.getObject("aBytes"))
                     .getLength();
@@ -487,4 +539,28 @@ public class FieldsAvroSchemeTest {
         return schema.toString();
     }
 
+    @Test
+    public void testWriteNullableEnum() throws IOException {
+        Schema.Parser p = new Schema.Parser();
+        Schema genderSchema = p
+                .parse("{" + "\"type\": \"enum\"," + "\"name\": \"Gender\","
+                        + "\"symbols\": [\"M\", \"F\"]" + "}");
+        Schema fooSchema = p.parse("{" + "\"type\" : \"record\","
+                + "\"name\" : \"Foo\"," + "\"fields\" : ["
+                + "{\"type\" : [\"Gender\", \"null\"], \"name\" : \"gender\" }"
+                + "]}");
+
+        GenericData.Record foo = new GenericData.Record(fooSchema);
+
+        foo.put(0, new GenericData.EnumSymbol(genderSchema, "M"));
+
+        GenericDatumWriter<GenericData.Record> w = new GenericDatumWriter<GenericData.Record>(
+                fooSchema);
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Encoder e = EncoderFactory.get().binaryEncoder(baos, null);
+
+        w.write(foo, e);
+
+    }
 }

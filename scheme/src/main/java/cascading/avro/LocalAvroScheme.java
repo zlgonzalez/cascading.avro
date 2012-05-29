@@ -32,7 +32,6 @@ import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericDatumWriter;
 import org.apache.avro.io.DatumReader;
 import org.apache.avro.io.DatumWriter;
-import org.apache.avro.reflect.ReflectDatumReader;
 
 import cascading.flow.FlowProcess;
 import cascading.scheme.SinkCall;
@@ -114,7 +113,7 @@ public class LocalAvroScheme
             // no need to open them all
             InputStream stream = new FileInputStream(file);
             DataFileStream reader = new DataFileStream(stream,
-                    new ReflectDatumReader());
+                    new GenericDatumReader());
             dataSchema = reader.getSchema();
             retrieveSourceFields(tap);
             return;

@@ -25,6 +25,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileConstants;
 import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData.Record;
+import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.mapred.AvroInputFormat;
 import org.apache.avro.mapred.AvroJob;
 import org.apache.avro.mapred.AvroKey;
@@ -33,7 +34,6 @@ import org.apache.avro.mapred.AvroOutputFormat;
 import org.apache.avro.mapred.AvroSerialization;
 import org.apache.avro.mapred.AvroValue;
 import org.apache.avro.mapred.AvroWrapper;
-import org.apache.avro.reflect.ReflectDatumReader;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -186,7 +186,7 @@ public class AvroScheme
                 // no need to open them all
                 InputStream stream = new BufferedInputStream(fs.open(p));
                 DataFileStream reader = new DataFileStream(stream,
-                        new ReflectDatumReader());
+                        new GenericDatumReader());
                 dataSchema = reader.getSchema();
                 retrieveSourceFields(tap);
                 return;

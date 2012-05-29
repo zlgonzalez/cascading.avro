@@ -17,34 +17,6 @@ class AvroHelper implements Serializable {
 
     private static final long serialVersionUID = -7610828460324010725L;
 
-    /**
-     * Helper class used to save an Enum name in a type that Avro requires for
-     * serialization.
-     */
-    static class CascadingEnumSymbol implements GenericEnumSymbol {
-
-        private final String name;
-
-        private CascadingEnumSymbol(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        /*
-         * (non-Javadoc)
-         * 
-         * @see org.apache.avro.generic.GenericContainer#getSchema()
-         */
-        @Override
-        public Schema getSchema() {
-            return null;
-        }
-    }
-
     private static final String RECORD_NAME = "CascadingAvroSchema";
 
     public static Schema getSchema(String recordName, Fields fields,
@@ -123,7 +95,7 @@ class AvroHelper implements Serializable {
             for (Object name : names) {
                 enumNames.add(name.toString());
             }
-            return Schema.createEnum(types[0].getName(), null, null, enumNames);
+            return Schema.createEnum(clazz.getName(), null, null, enumNames);
         } else {
             return Schema.create(avroType);
         }
