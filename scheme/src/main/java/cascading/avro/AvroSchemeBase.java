@@ -245,8 +245,11 @@ public abstract class AvroSchemeBase<Config, Input, Output, SourceContext, SinkC
             out.writeObject(type);
             out.writeInt(pos);
             out.writeUTF(schema.toString());
-            if (subType != null) {
-                out.writeUTF(HadoopUtil.serializeBase64(subType));
+            boolean hasSubType = subType != null;
+            out.writeBoolean(hasSubType);
+            
+            if (hasSubType) {
+                out.writeObject(subType);
             }
         }
 
@@ -256,9 +259,8 @@ public abstract class AvroSchemeBase<Config, Input, Output, SourceContext, SinkC
             type = (Schema.Type) in.readObject();
             pos = in.readInt();
             schema = readSchema(in);
-            if (in.available() > 0) {
-                final String utfStr = in.readUTF();
-                subType = (FieldType) HadoopUtil.deserializeBase64(utfStr);
+            if (in.readBoolean()) {
+                subType = (FieldType)in.readObject();
             }
         }
     }

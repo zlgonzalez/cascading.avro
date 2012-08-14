@@ -31,8 +31,8 @@
 	</scm>
 	<properties>
 		<hadoop.version>1.0.2</hadoop.version>
-		<cascading.version>2.0.0-wip-310</cascading.version>
-		<avro.version>1.5.4</avro.version>
+		<cascading.version>2.0.4</cascading.version>
+		<avro.version>1.7.1</avro.version>
 	</properties>
     <repositories>
         <repository>
