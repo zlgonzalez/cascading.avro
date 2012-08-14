@@ -39,7 +39,6 @@ import org.apache.avro.util.Utf8;
 import org.apache.hadoop.io.BytesWritable;
 
 import cascading.flow.FlowProcess;
-import cascading.flow.hadoop.util.HadoopUtil;
 import cascading.scheme.Scheme;
 import cascading.scheme.SinkCall;
 import cascading.scheme.SourceCall;

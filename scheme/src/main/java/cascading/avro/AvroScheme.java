@@ -73,20 +73,25 @@ import cascading.tuple.Fields;
  * </ul>
  */
 
+@SuppressWarnings("serial")
 public class AvroScheme
         extends
         AvroSchemeBase<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>, Object[], Object> {
 
-    private static final long serialVersionUID = -6846529256253231806L;
+    /**
+     * This constructor only makes sense when using AvroScheme as a source, not a sink - in
+     * that situation, the schema can be extracted from (one of the) source files.
+     */
+    public AvroScheme() {
+    }
 
     public AvroScheme(Schema dataSchema) {
         super(dataSchema);
     }
 
-    public AvroScheme() {
-    }
-
     /**
+     * Constructor that supports the original AvroScheme approach to explicitly specifying the fields & types.
+     * 
      * @param fields
      * @param classes
      */
@@ -141,6 +146,10 @@ public class AvroScheme
         conf.setMapOutputKeyClass(AvroKey.class);
         conf.setMapOutputValueClass(AvroValue.class);
 
+        // TODO - if the user did new AvroScheme(), then dataSchema will be null.
+        // We should explicitly catch that case and throw a better exception here
+        // that says unspecified schemas only make sense when AvroScheme is used as
+        // a source, not a sink.
         conf.set(AvroJob.OUTPUT_SCHEMA, dataSchema.toString());
         conf.setOutputFormat(AvroOutputFormat.class);
         conf.setOutputKeyClass(AvroWrapper.class);
@@ -197,6 +206,8 @@ public class AvroScheme
         }
     }
 
+    // TODO <tap> isn't used here. And this code mostly duplicates what's in
+    // AvroSchemeBase's constructor; the two should be collapse.
     private Fields retrieveSourceFields(Tap tap) {
         if (!getSourceFields().isUnknown())
             return getSourceFields();

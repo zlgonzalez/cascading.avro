@@ -16,7 +16,6 @@
 
 package cascading.avro;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -28,21 +27,39 @@ import org.apache.hadoop.io.BytesWritable;
 
 import cascading.tuple.Fields;
 
-class AvroHelper implements Serializable {
+class AvroHelper {
 
-    private static final long serialVersionUID = -7610828460324010725L;
+    private static final String DEFAULT_RECORD_NAME = "CascadingAvroSchema";
 
-    private static final String RECORD_NAME = "CascadingAvroSchema";
+    @SuppressWarnings("serial")
+    private static final HashMap<Class<?>, Schema.Type> SCHEMA_TYPES = new HashMap<Class<?>, Schema.Type>() {{
+        put(Integer.class, Schema.Type.INT);
+        put(Long.class, Schema.Type.LONG);
+        put(Boolean.class, Schema.Type.BOOLEAN);
+        put(Double.class, Schema.Type.DOUBLE);
+        put(Float.class, Schema.Type.FLOAT);
+        put(String.class, Schema.Type.STRING);
+        put(BytesWritable.class, Schema.Type.BYTES);
+
+        // Note : Cascading field type for Array and Map is really a Tuple
+        put(List.class, Schema.Type.ARRAY);
+        put(Map.class, Schema.Type.MAP);
+
+        // TODO - the following Avro Schema.Types are not handled as yet
+        // FIXED
+        // RECORD
+        // UNION
+    }};
+
+    
+    public static Schema getSchema(Fields fields, Class<?>[] types) {
+        return getSchema(DEFAULT_RECORD_NAME, fields, types);
+    }
 
     public static Schema getSchema(String recordName, Fields fields,
             Class<?>[] types) {
         validateFields(fields, types);
         return generateSchema(recordName, fields, types, 0);
-    }
-
-    public static Schema getSchema(Fields fields, Class<?>[] types) {
-        validateFields(fields, types);
-        return generateSchema(RECORD_NAME, fields, types, 0);
     }
 
     private static Schema generateSchema(String recordName,
@@ -158,8 +175,6 @@ class AvroHelper implements Serializable {
         return len;
     }
 
-    private static final HashMap<Class<?>, Schema.Type> SCHEMA_TYPES = createTypeMap();
-
     public static Schema.Type toSchemaType(Class<?> type) {
         if (SCHEMA_TYPES.containsKey(type)) {
             return SCHEMA_TYPES.get(type);
@@ -171,25 +186,4 @@ class AvroHelper implements Serializable {
         }
     }
 
-    private static HashMap<Class<?>, Schema.Type> createTypeMap() {
-        HashMap<Class<?>, Schema.Type> typeMap = new HashMap<Class<?>, Schema.Type>();
-        typeMap.put(Integer.class, Schema.Type.INT);
-        typeMap.put(Long.class, Schema.Type.LONG);
-        typeMap.put(Boolean.class, Schema.Type.BOOLEAN);
-        typeMap.put(Double.class, Schema.Type.DOUBLE);
-        typeMap.put(Float.class, Schema.Type.FLOAT);
-        typeMap.put(String.class, Schema.Type.STRING);
-        typeMap.put(BytesWritable.class, Schema.Type.BYTES);
-
-        // Note : Cascading field type for Array and Map is really a Tuple
-        typeMap.put(List.class, Schema.Type.ARRAY);
-        typeMap.put(Map.class, Schema.Type.MAP);
-
-        // TODO - the following Avro Schema.Types are not handled as yet
-        // FIXED
-        // RECORD
-        // UNION
-
-        return typeMap;
-    }
 }
