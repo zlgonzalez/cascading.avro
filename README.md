@@ -3,13 +3,9 @@
 Cascading scheme for reading and writing data serialized using Apache Avro. This project provides several
 schemes that work off an Avro record schema.
 
-- AvroScheme - sources and sinks tuples with fields named and ordered according to a given Avro schema.
-- TextScheme - A variant of of standard Cascading TextDelimited scheme that uses an Avro schema to infer
-field names and types.
-- RenamerScheme - used to coerce field names (mostly for using with Cascalog)
+- AvroScheme - sources and sinks tuples with fields named and ordered according to a given Avro schema. If no schema is specified in a source it will peek at the data and get the schema. Currently a sink schema is required but this may change soon. 
 
-The current implementation supports all primitive types, byte arrays (including fixed), as well as, union of null
-and another supported type.
+The current implementation supports all Avro types including nested records. A nested record will be written as a new Cascading TupleEntry inside the proper Tuple Field. 
 
 # cascading.avro-maven-plugin
 
