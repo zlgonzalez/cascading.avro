@@ -16,5 +16,4 @@ for all record fields, as well as, a field named ALL that lists all fields in th
 
 ## License
 
-Copyright (c) 2012 MaxPoint Interactive, Inc. All Rights Reserved.
 Distributed under Apache License, Version 2.0
