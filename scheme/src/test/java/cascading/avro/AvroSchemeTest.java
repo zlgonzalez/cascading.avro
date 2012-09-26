@@ -1,18 +1,16 @@
 /*
- * Copyright (c) 2012 MaxPoint Interactive, Inc. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
 package cascading.avro;
 
@@ -39,6 +37,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import cascading.flow.hadoop.HadoopFlowProcess;
+import cascading.tap.hadoop.Hfs;
 import cascading.tap.hadoop.Lfs;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
@@ -55,34 +54,34 @@ public class AvroSchemeTest {
 
     @Test
     public void testRoundTrip() throws Exception {
-        final Schema schema = Schema.parse(getClass().getResourceAsStream(
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
                 "test1.avsc"));
         final AvroScheme scheme = new AvroScheme(schema);
 
         final Fields fields = new Fields("aBoolean", "anInt", "aLong",
                 "aDouble", "aFloat", "aBytes", "aFixed", "aNull", "aString",
-                "aList", "aMap");
+                "aList", "aMap", "aUnion");
 
-        final Lfs lfs = new Lfs(scheme, tempDir.getRoot().toString());
+        final Hfs lfs = new Lfs(scheme, tempDir.getRoot().toString());
         HadoopFlowProcess writeProcess = new HadoopFlowProcess(new JobConf());
         final TupleEntryCollector collector = lfs.openForWrite(writeProcess);
-        List<String> aList = new ArrayList<String>();
+        List<Integer> aList = new ArrayList<Integer>();
         Map<String, Integer> aMap = new HashMap<String, Integer>();
         aMap.put("one", 1);
         aMap.put("two", 2);
 
-        aList.add("0");
-        aList.add("1");
-        final BytesWritable bytesWritable = new BytesWritable(new byte[16]);
-        final BytesWritable bytesWritable2 = new BytesWritable(new byte[] { 1,
+        aList.add(0);
+        aList.add(1);
+        BytesWritable bytesWritable = new BytesWritable(new byte[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16} );
+        BytesWritable bytesWritable2 = new BytesWritable(new byte[] { 1,
                 2, 3 });
-        final Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2,
-                bytesWritable, null, "test-string", aList, aMap);
+        Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2,
+                bytesWritable, null, "test-string", aList, aMap, 5);
         write(scheme, collector, new TupleEntry(fields, tuple));
         write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
                 3.0, 4.0F, new BytesWritable(new byte[0]), new BytesWritable(
                         new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4,
-                                5, 6 }), null, null, aList, aMap)));
+                                5, 6 }), null, "other string", aList, aMap, null)));
         collector.close();
 
         HadoopFlowProcess readProcess = new HadoopFlowProcess(new JobConf());
@@ -90,84 +89,29 @@ public class AvroSchemeTest {
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry1 = iterator.next();
 
-        assertEquals(false, readEntry1.getBoolean("aBoolean"));
-        assertEquals(1, readEntry1.getInteger("anInt"));
-        assertEquals(2L, readEntry1.getLong("aLong"));
-        assertEquals(3.0, readEntry1.getDouble("aDouble"), 0.01);
-        assertEquals(4.0F, readEntry1.getFloat("aFloat"), 0.01);
-        assertEquals("test-string", readEntry1.get("aString"));
-        assertEquals(bytesWritable2, readEntry1.getObject("aBytes"));
-        assertEquals(bytesWritable, readEntry1.getObject("aFixed"));
-        assertEquals("0", ((List) readEntry1.getObject("aList")).get(0)
+        assertEquals(false, readEntry1.getBoolean(0));
+        assertEquals(1, readEntry1.getInteger(1));
+        assertEquals(2L, readEntry1.getLong(2));
+        assertEquals(3.0, readEntry1.getDouble(3), 0.01);
+        assertEquals(4.0F, readEntry1.getFloat(4), 0.01);
+        assertEquals(bytesWritable2, readEntry1.getObject(5));
+        assertEquals(bytesWritable, readEntry1.getObject(6));
+        assertEquals("test-string", readEntry1.getString(8));
+        assertEquals("0", ((List) readEntry1.getObject(9)).get(0)
                 .toString());
         assertEquals(1,
-                ((Map) readEntry1.getObject("aMap")).get(new Utf8("one")));
+                ((Map) readEntry1.getObject(10)).get("one"));
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry2 = iterator.next();
 
-        assertNull(readEntry2.get("aString"));
+        assertNull(readEntry2.get("aUnion"));
     }
 
-    @Test
-    public void testRoundTrip2() throws Exception {
-        final Schema schema = Schema.parse(getClass().getResourceAsStream(
-                "test1.avsc"));
-        final AvroScheme scheme = new AvroScheme(schema);
 
-        final Fields fields = new Fields("aBoolean", "anInt", "aLong",
-                "aDouble", "aFloat", "aBytes", "aFixed", "aNull", "aString",
-                "aList", "aMap");
-
-        Lfs lfs = new Lfs(scheme, tempDir.getRoot().toString());
-        HadoopFlowProcess writeProcess = new HadoopFlowProcess(new JobConf());
-        final TupleEntryCollector collector = lfs.openForWrite(writeProcess);
-        List<String> aList = new ArrayList<String>();
-        Map<String, Integer> aMap = new HashMap<String, Integer>();
-        aMap.put("one", 1);
-        aMap.put("two", 2);
-
-        aList.add("0");
-        aList.add("1");
-        write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
-                3.0, 4.0F, new BytesWritable(new byte[] { 1, 2, 3 }),
-                new BytesWritable(new byte[16]), null, "test-string", aList,
-                aMap)));
-        write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
-                3.0, 4.0F, new BytesWritable(new byte[0]), new BytesWritable(
-                        new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4,
-                                5, 6 }), null, null, aList, aMap)));
-        collector.close();
-
-        HadoopFlowProcess readProcess = new HadoopFlowProcess(new JobConf());
-        lfs = new Lfs(new AvroScheme(), tempDir.getRoot().toString());
-
-        final TupleEntryIterator iterator = lfs.openForRead(readProcess);
-        assertTrue(iterator.hasNext());
-        final TupleEntry readEntry1 = iterator.next();
-
-        assertEquals(false, readEntry1.getBoolean("aBoolean"));
-        assertEquals(1, readEntry1.getInteger("anInt"));
-        assertEquals(2L, readEntry1.getLong("aLong"));
-        assertEquals(3.0, readEntry1.getDouble("aDouble"), 0.01);
-        assertEquals(4.0F, readEntry1.getFloat("aFloat"), 0.01);
-        assertEquals("test-string", readEntry1.get("aString"));
-        assertEquals(new BytesWritable(new byte[] { 1, 2, 3 }),
-                readEntry1.getObject("aBytes"));
-        assertEquals(new BytesWritable(new byte[16]),
-                readEntry1.getObject("aFixed"));
-        assertEquals("0", ((List) readEntry1.getObject("aList")).get(0)
-                .toString());
-        assertEquals(1,
-                ((Map) readEntry1.getObject("aMap")).get(new Utf8("one")));
-        assertTrue(iterator.hasNext());
-        final TupleEntry readEntry2 = iterator.next();
-
-        assertNull(readEntry2.get("aString"));
-    }
 
     @Test
     public void listOrMapInsideListTest() throws Exception {
-        final Schema schema = Schema.parse(getClass().getResourceAsStream(
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
                 "test4.avsc"));
         final AvroScheme scheme = new AvroScheme(schema);
 
@@ -205,15 +149,15 @@ public class AvroSchemeTest {
 
         assertEquals(Integer.valueOf(0), outListOfInt.get(0));
         assertEquals(Integer.valueOf(1), outListOfInt.get(1));
-        assertEquals(Long.valueOf(1L), outMapToLong.get(new Utf8("one")));
-        assertEquals(Long.valueOf(2L), outMapToLong.get(new Utf8("two")));
+        assertEquals(Long.valueOf(1L), outMapToLong.get("one"));
+        assertEquals(Long.valueOf(2L), outMapToLong.get("two"));
         assertTrue(!iterator.hasNext());
 
     }
 
     @Test
     public void listOrMapInsideMapTest() throws Exception {
-        final Schema schema = Schema.parse(getClass().getResourceAsStream(
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
                 "test3.avsc"));
         final AvroScheme scheme = new AvroScheme(schema);
 
@@ -245,14 +189,14 @@ public class AvroSchemeTest {
         final TupleEntry readEntry1 = iterator.next();
 
         List<Integer> outListOfInt = (List) ((Map) readEntry1
-                .getObject("aMapToListOfInt")).get(new Utf8("key"));
-        Map<Utf8, Long> outMapToLong = (Map) ((Map) readEntry1
-                .getObject("aMapToMapToLong")).get(new Utf8("key"));
+                .getObject("aMapToListOfInt")).get("key");
+        Map<String, Long> outMapToLong = (Map) ((Map) readEntry1
+                .getObject("aMapToMapToLong")).get("key");
 
         assertEquals(Integer.valueOf(0), outListOfInt.get(0));
         assertEquals(Integer.valueOf(1), outListOfInt.get(1));
-        assertEquals(Long.valueOf(1L), outMapToLong.get(new Utf8("one")));
-        assertEquals(Long.valueOf(2L), outMapToLong.get(new Utf8("two")));
+        assertEquals(Long.valueOf(1L), outMapToLong.get("one"));
+        assertEquals(Long.valueOf(2L), outMapToLong.get("two"));
         assertTrue(!iterator.hasNext());
 
     }
@@ -264,7 +208,7 @@ public class AvroSchemeTest {
 
     @Test
     public void testSerialization() throws Exception {
-        final Schema schema = Schema.parse(getClass().getResourceAsStream(
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
                 "test1.avsc"));
         final AvroScheme expected = new AvroScheme(schema);
 
