@@ -57,42 +57,76 @@ public class AvroScheme
 	private boolean isNullable = true;
 	private static String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
 
+    public AvroScheme() {
+        this(null, DEFAULT_RECORD_NAME, true);
+    }
+
+    public AvroScheme(String name) {
+        this(null, name, true);
+    }
+    
+    public AvroScheme(Schema userSchema) {
+        this(userSchema, DEFAULT_RECORD_NAME, true);
+    }
+
+    public AvroScheme(boolean isNullable) {
+        this(null, DEFAULT_RECORD_NAME, isNullable);
+    }
+    
+    public AvroScheme(Fields fields, Class<?>[] types) {
+        this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types), DEFAULT_RECORD_NAME, true);
+    }
+    
+    
+	/**
+	 * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
+	 * Note that if schema is null, the Avro schema will be inferred from one of the source files (if this scheme
+	 * is being used as a source) or it will be inferred from the first output TupleEntry written (if this scheme
+	 * is being used as a sink). In this latter case, every field value in the first output TupleEntry must be
+	 * non-null, otherwise an exception will be thrown.
+	 * 
+	 * @param schema Avro schema, or null if this is to be inferred from source file/outgoing TupleEntry data.
+	 * @param recordName Name to use for Avro records.
+	 * @param isNullable True if it's OK for input field data to be null.
+	 */
 	public AvroScheme(Schema schema, String recordName, boolean isNullable) {
+	    super();
+	    
 		this.schema = schema;
 		this.recordName = recordName;
 		this.isNullable = isNullable;
 	}
 
-	public AvroScheme(String name) {
-		this(null, name, true);
+	protected String getJsonSchema() {
+	    if (schema == null) {
+	        return "";
+	    } else {
+	        return schema.toString();
+	    }
 	}
 	
-	public AvroScheme(Schema userSchema) {
-		this(userSchema, DEFAULT_RECORD_NAME, true);
-	}
-
-	public AvroScheme(boolean isNullable) {
-		this(null, DEFAULT_RECORD_NAME, isNullable);
+	public String getRecordName() {
+	    return recordName;
 	}
 	
-	public AvroScheme() {
-		this(null, DEFAULT_RECORD_NAME, true);
+	public void setRecordName(String recordName) {
+	    this.recordName = recordName;
 	}
-
-
+	
 	@Override
 	public void sink(
 			FlowProcess<JobConf> flowProcess,
 			SinkCall<Object[], OutputCollector<AvroWrapper<Record>, Writable>> sinkCall)
 			throws IOException {
 		TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
-		System.out.println(tupleEntry);
+		// System.out.println(tupleEntry);
 		Record record = new Record((Schema)sinkCall.getContext()[0]);
 		Object[] objs = CascadingToAvro.parseTupleEntry(tupleEntry, (Schema)sinkCall.getContext()[0]);
-		for(int i=0; i < objs.length; i++) record.put(i, objs[i]);
-		sinkCall.getOutput().collect(new AvroWrapper<Record>(record),
-                NullWritable.get());
-
+		for(int i=0; i < objs.length; i++) {
+		    record.put(i, objs[i]);
+		}
+		
+		sinkCall.getOutput().collect(new AvroWrapper<Record>(record), NullWritable.get());
 	}
 
 	
@@ -141,11 +175,11 @@ public class AvroScheme
 
 		int n = schema.getFields().size();
 		Object[] fieldNames = new Object[n];
-		for (int i = 0; i < n; i++)
+		for (int i = 0; i < n; i++) {
 			fieldNames[i] = schema.getFields().get(i).name();
-		setSourceFields(new Fields(Arrays.copyOf(fieldNames, fieldNames.length,
-				Comparable[].class)));
-
+		}
+		
+		setSourceFields(new Fields(Arrays.copyOf(fieldNames, fieldNames.length, Comparable[].class)));
 		return getSourceFields();
 	}
 
@@ -155,8 +189,7 @@ public class AvroScheme
 			SourceCall<Object[], RecordReader<AvroWrapper<Record>, Writable>> sourceCall)
 			throws IOException {
 
-		RecordReader<AvroWrapper<Record>, Writable> input = sourceCall
-				.getInput();
+		RecordReader<AvroWrapper<Record>, Writable> input = sourceCall.getInput();
 		AvroWrapper<Record> wrapper = input.createKey();
 		if (!input.next(wrapper, input.createValue())) {
 			return false;
@@ -187,8 +220,9 @@ public class AvroScheme
 
 	private Schema getSourceSchema(FlowProcess<JobConf> flowProcess, Tap tap) {
 		try {
-			if (tap instanceof CompositeTap)
+			if (tap instanceof CompositeTap) {
 				tap = (Tap) ((CompositeTap) tap).getChildTaps().next();
+			}
 			final String file = tap.getIdentifier();
 			Path p = new Path(file);
 			Configuration conf = new Configuration();
@@ -197,11 +231,11 @@ public class AvroScheme
 				p = status.getPath();
 				// no need to open them all
 				InputStream stream = new BufferedInputStream(fs.open(p));
-				DataFileStream reader = new DataFileStream(stream,
-						new GenericDatumReader());
+				DataFileStream reader = new DataFileStream(stream, new GenericDatumReader());
 				Schema dataSchema = reader.getSchema();
 				return dataSchema;
 			}
+			
 			throw new RuntimeException("no schema found in " + file);
 		} catch (IOException e) {
 			throw new RuntimeException(e);

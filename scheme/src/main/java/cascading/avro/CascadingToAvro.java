@@ -18,6 +18,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +37,21 @@ import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 
 public class CascadingToAvro {
+
+    @SuppressWarnings("serial")
+    private static Map<Class<?>, Schema.Type> TYPE_MAP = new HashMap<Class<?>, Schema.Type>() {{
+       put(Integer.class, Schema.Type.INT); 
+       put(Long.class, Schema.Type.LONG);
+       put(Boolean.class, Schema.Type.BOOLEAN);
+       put(Double.class, Schema.Type.DOUBLE);
+       put(Float.class, Schema.Type.FLOAT);
+       put(String.class, Schema.Type.STRING);
+       put(BytesWritable.class, Schema.Type.BYTES);
+
+       // Note : Cascading field type for Array and Map is really a Tuple
+       put(List.class, Schema.Type.ARRAY);
+       put(Map.class, Schema.Type.MAP);
+    }};
 
 	public static Object[] parseTupleEntry(TupleEntry tuple, Schema writerSchema) {
 		if (!(writerSchema.getFields().size() == tuple.size())) {
@@ -220,6 +236,143 @@ public class CascadingToAvro {
 		Schema unionSchema = Schema.createUnion(types);
 		return unionSchema;
 	}
-	
 
+    public static Schema generateAvroSchemaFromFieldsAndTypes(String recordName, Fields schemeFields, Class<?>[] schemeTypes) {
+        if (schemeFields.size() == 0) {
+            throw new IllegalArgumentException("There must be at least one field");
+        }
+
+        int schemeTypesSize = 0;
+        for (int i = 0; i < schemeTypes.length; i++, schemeTypesSize++) {
+            if ((schemeTypes[i] == List.class) || (schemeTypes[i] == Map.class)) {
+                i++;
+            }
+        }
+
+        if (schemeTypesSize != schemeFields.size()) {
+            throw new IllegalArgumentException("You must have a schemeType for every field");
+        }
+
+        for (int i = 0; i < schemeTypes.length; i++) {
+            if ((schemeTypes[i] == List.class) || (schemeTypes[i] == Map.class)) {
+                ++i;
+                if (!isValidArrayType(schemeTypes[i])) {
+                    throw new IllegalArgumentException("Only primitive types are allowed for an Array");
+                }
+            }
+        }
+
+        return generateSchema(recordName, schemeFields, schemeTypes, 0);
+    }
+	
+    public static void addToTuple(Tuple t, byte[] bytes) {
+        t.add(new BytesWritable(bytes));
+    }
+
+    @SuppressWarnings("rawtypes")
+    public static void addToTuple(Tuple t, Enum e) {
+        t.add(e.toString());
+    }
+
+    public static void addToTuple(Tuple t, List<?> list) {
+        Tuple listTuple = new Tuple();
+        for (Object item : list) {
+            listTuple.add(item);
+        }
+
+        t.add(listTuple);
+    }
+
+    public static void addToTuple(Tuple t, Map<String, ?> map) {
+        Tuple mapTuple = new Tuple();
+        for (String key : map.keySet()) {
+            mapTuple.add(key);
+            mapTuple.add(map.get(key));
+        }
+
+        t.add(mapTuple);
+    }
+    
+    private static boolean isValidArrayType(Class<?> arrayType) {
+        // only primitive types are allowed for arrays
+
+        return (arrayType == Boolean.class || arrayType == Integer.class || arrayType == Long.class || arrayType == Float.class || arrayType == Double.class || arrayType == String.class
+                        || arrayType == BytesWritable.class);
+    }
+
+    private static Schema generateSchema(String recordName, Fields schemeFields, Class<?>[] schemeTypes, int depth) {
+        // Create a 'record' that is made up of fields.
+        // Since we support arrays and maps that means we can have nested
+        // records
+
+        List<Schema.Field> fields = new ArrayList<Schema.Field>();
+        for (int typeIndex = 0, fieldIndex = 0; typeIndex < schemeTypes.length; typeIndex++, fieldIndex++) {
+            String fieldName = schemeFields.get(fieldIndex).toString();
+            Class<?>[] subSchemeTypes = new Class[2]; // at most 2, since we
+                                                      // only allow primitive
+                                                      // types for arrays and
+                                                      // maps
+            subSchemeTypes[0] = schemeTypes[typeIndex];
+            if ((schemeTypes[typeIndex] == List.class) || (schemeTypes[typeIndex] == Map.class)) {
+                typeIndex++;
+                subSchemeTypes[1] = schemeTypes[typeIndex];
+            }
+
+            final Schema schema = createAvroSchema(recordName, schemeFields, subSchemeTypes, depth + 1);
+            final Schema nullSchema = Schema.create(Schema.Type.NULL);
+            List<Schema> schemas = new LinkedList<Schema>() {
+                {
+                    add(nullSchema);
+                    add(schema);
+                }
+            };
+
+            fields.add(new Schema.Field(fieldName, Schema.createUnion(schemas), "", null));
+        }
+
+        // Avro doesn't like anonymous records - so create a named one.
+        if (depth > 0) {
+            recordName = recordName + depth;
+        }
+        
+        Schema schema = Schema.createRecord(recordName, "auto generated", "", false);
+        schema.setFields(fields);
+        return schema;
+    }
+    
+    private static Schema createAvroSchema(String recordName, Fields schemeFields, Class<?>[] fieldTypes, int depth) {
+        Schema.Type avroType = toAvroSchemaType(fieldTypes[0]);
+
+        if (avroType == Schema.Type.ARRAY) {
+            Class<?> arrayTypes[] = { fieldTypes[1] };
+            Schema schema = Schema.createArray(createAvroSchema(recordName, Fields.offsetSelector(schemeFields.size() - 1, 1), arrayTypes, depth + 1));
+            return schema;
+        } else if (avroType == Schema.Type.MAP) {
+            Class<?> mapTypes[] = { fieldTypes[1] };
+            return Schema.createMap(createAvroSchema(recordName, Fields.offsetSelector(schemeFields.size() - 1, 1), mapTypes, depth + 1));
+        } else if (avroType == Schema.Type.RECORD) {
+            return generateSchema(recordName, Fields.offsetSelector(schemeFields.size() - 1, 1), fieldTypes, depth + 1);
+        } else if (avroType == Schema.Type.ENUM) {
+            Class<?> clazz = fieldTypes[0];
+            Object[] names = clazz.getEnumConstants();
+            List<String> enumNames = new ArrayList<String>(names.length);
+            for (Object name : names) {
+                enumNames.add(name.toString());
+            }
+
+            return Schema.createEnum(fieldTypes[0].getName(), null, null, enumNames);
+        } else {
+            return Schema.create(avroType);
+        }
+    }
+    
+    private static Schema.Type toAvroSchemaType(Class<?> clazz) {
+        if (TYPE_MAP.containsKey(clazz)) {
+            return TYPE_MAP.get(clazz);
+        } else if (clazz.isEnum()) {
+            return Schema.Type.ENUM;
+        } else {
+            throw new UnsupportedOperationException("The class type " + clazz + " is currently unsupported");
+        }
+    }
 }
