@@ -99,6 +99,20 @@ public class CascadingToAvroTest {
 	}
 	
 	@Test
+	public void testFromTupleToMap() {
+		Schema fieldSchema = schema.getField("aMap").schema();
+		Tuple tuple = new Tuple();
+	    tuple.add("one");
+	    tuple.add(1);
+	    tuple.add("two");
+	    tuple.add(2);
+	    Map<String,Integer> outMap = (Map<String, Integer>) CascadingToAvro.toAvro(tuple, fieldSchema);
+
+	    assertThat(outMap.get("one"), is(1));
+	    assertThat(outMap.get("two"), is(2));
+	}
+
+	@Test
 	public void testFromArrayNested() {
 		Schema innerSchema = Schema.createArray(Schema.create(Schema.Type.INT));
 		Schema outerSchema = Schema.createArray(innerSchema);

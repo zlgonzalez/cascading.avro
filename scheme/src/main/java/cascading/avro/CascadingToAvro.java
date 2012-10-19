@@ -128,10 +128,24 @@ public class CascadingToAvro {
 	protected static Object toAvroMap(Object obj, Schema schema) {
 	
         Map<String, Object> convertedMap = new HashMap<String, Object>();
-        for (Map.Entry<String, Object> e : ((Map<String, Object>) obj).entrySet()) {
-            convertedMap.put(e.getKey(), toAvro(e.getValue(), schema.getValueType()));
+        if (obj instanceof Tuple) {
+        	Tuple tuple = (Tuple) obj;
+        	if (tuple.size() % 2 == 0) {
+        		for(int i = 0; i < tuple.size(); i = i+2) {
+        			convertedMap.put(tuple.get(i).toString(), toAvro(tuple.get(i+1), schema.getValueType()));
+        		}
+        	}
+        	else {
+        		throw new RuntimeException("Can't convert from an odd length tuple to a map");
+        	}
         }
+        else{
+	        for (Map.Entry<String, Object> e : ((Map<String, Object>) obj).entrySet()) {
+	            convertedMap.put(e.getKey(), toAvro(e.getValue(), schema.getValueType()));
+	        }
+    	}
         return convertedMap;
+
     }
 
 	protected static Object toAvroBytes(Object obj) {
