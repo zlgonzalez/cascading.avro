@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 
+
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.file.DataFileStream;
@@ -48,33 +49,19 @@ import cascading.tuple.TupleEntry;
 
 
 @SuppressWarnings("serial")
-public class AvroScheme
-		extends
-		Scheme<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>, Object[], Object[]> {
+public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, Object[], Object[]>  {
 
-	private Schema schema = null;
-	private String recordName = null;
-	private boolean isNullable = true;
+	private static final long serialVersionUID = 42L;
+	private Schema schema;
+	private String recordName;
 	private static String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
 
     public AvroScheme() {
-        this(null, DEFAULT_RECORD_NAME, true);
-    }
-
-    public AvroScheme(String name) {
-        this(null, name, true);
-    }
-    
-    public AvroScheme(Schema userSchema) {
-        this(userSchema, DEFAULT_RECORD_NAME, true);
-    }
-
-    public AvroScheme(boolean isNullable) {
-        this(null, DEFAULT_RECORD_NAME, isNullable);
+        this(null);
     }
     
     public AvroScheme(Fields fields, Class<?>[] types) {
-        this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types), DEFAULT_RECORD_NAME, true);
+        this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types));
     }
     
     
@@ -87,15 +74,22 @@ public class AvroScheme
 	 * 
 	 * @param schema Avro schema, or null if this is to be inferred from source file/outgoing TupleEntry data.
 	 * @param recordName Name to use for Avro records.
-	 * @param isNullable True if it's OK for input field data to be null.
 	 */
-	public AvroScheme(Schema schema, String recordName, boolean isNullable) {
-	    super();
-	    
+	public AvroScheme(Schema schema) {
 		this.schema = schema;
-		this.recordName = recordName;
-		this.isNullable = isNullable;
-	}
+		if (schema == null) {
+			setSinkFields(Fields.ALL);
+			setSourceFields(Fields.ALL);
+		}
+		else {
+			Fields cascadingFields = new Fields();
+			for(Field avroField : schema.getFields()) {
+				cascadingFields = cascadingFields.append(new Fields(avroField.name()));
+			}
+			setSinkFields(cascadingFields);
+			setSourceFields(cascadingFields);
+		}
+    }
 
 	protected String getJsonSchema() {
 	    if (schema == null) {
@@ -105,21 +99,12 @@ public class AvroScheme
 	    }
 	}
 	
-	public String getRecordName() {
-	    return recordName;
-	}
-	
-	public void setRecordName(String recordName) {
-	    this.recordName = recordName;
-	}
-	
 	@Override
 	public void sink(
 			FlowProcess<JobConf> flowProcess,
-			SinkCall<Object[], OutputCollector<AvroWrapper<Record>, Writable>> sinkCall)
+			SinkCall<Object[], OutputCollector> sinkCall)
 			throws IOException {
 		TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
-		// System.out.println(tupleEntry);
 		Record record = new Record((Schema)sinkCall.getContext()[0]);
 		Object[] objs = CascadingToAvro.parseTupleEntry(tupleEntry, (Schema)sinkCall.getContext()[0]);
 		for(int i=0; i < objs.length; i++) {
@@ -133,38 +118,23 @@ public class AvroScheme
 	@Override
 	public void sinkPrepare(
 			FlowProcess<JobConf> flowProcess,
-			SinkCall<Object[], OutputCollector<AvroWrapper<Record>, Writable>> sinkCall)
+			SinkCall<Object[], OutputCollector> sinkCall)
 			throws IOException {
 		TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
-		if (schema == null) {
-			 schema = CascadingToAvro.generateAvroSchemaFromTupleEntry(tupleEntry, recordName, isNullable);
-		}
 		sinkCall.setContext( new Object[] {schema});
-//		Record record = new Record((Schema)sinkCall.getContext()[0]);
-//		Object[] objs = CascadingToAvro.parseTupleEntry(tupleEntry, (Schema)sinkCall.getContext()[0]);
-//		
-//		sinkCall.getOutput().collect(new AvroWrapper<Record>(record),
-//                NullWritable.get());
+
 	}
 
 	
 	@Override
 	public void sinkConfInit(
 			FlowProcess<JobConf> flowProcess,
-			Tap<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>> tap,
+			Tap<JobConf, RecordReader, OutputCollector> tap,
 			JobConf conf) {
-//        if ((schema == null)) {  // dirty hack to get around not knowing the schema until runtime
-//        	AvroJob.setOutputSchema(conf, Schema.create(Schema.Type.NULL));
-//        }
 		if (schema == null ) {
 			throw new RuntimeException("Must provide sink schema");
 		}
         AvroJob.setOutputSchema(conf, schema);
-        Fields cascadingFields = new Fields();
-        for(Field avroField : schema.getFields()) {
-        	cascadingFields = cascadingFields.append(new Fields(avroField.name()));
-        }
-        setSinkFields(cascadingFields);
 	}
 
 	@Override
@@ -186,7 +156,7 @@ public class AvroScheme
 	@Override
 	public boolean source(
 			FlowProcess<JobConf> jobConf,
-			SourceCall<Object[], RecordReader<AvroWrapper<Record>, Writable>> sourceCall)
+			SourceCall<Object[], RecordReader> sourceCall)
 			throws IOException {
 
 		RecordReader<AvroWrapper<Record>, Writable> input = sourceCall.getInput();
@@ -207,7 +177,7 @@ public class AvroScheme
 	@Override
 	public void sourceConfInit(
 			FlowProcess<JobConf> flowProcess,
-			Tap<JobConf, RecordReader<AvroWrapper<Record>, Writable>, OutputCollector<AvroWrapper<Record>, Writable>> tap,
+			Tap<JobConf, RecordReader, OutputCollector> tap,
 			JobConf conf) {
 		if (schema == null) {
 			schema = getSourceSchema(flowProcess, tap);
@@ -242,18 +212,19 @@ public class AvroScheme
 		}
 	}
 	
+	static Schema readSchema(java.io.ObjectInputStream in) throws IOException {
+        final Schema.Parser parser = new Schema.Parser();
+        return parser.parse(in.readUTF());
+    }
+
 	private void writeObject(java.io.ObjectOutputStream out)
             throws IOException {
-        out.writeBoolean(isNullable);
-        out.writeUTF(schema.toString());
-        out.writeUTF(recordName);
+        out.writeUTF(this.schema.toString());
     }
 
     private void readObject(java.io.ObjectInputStream in)
-            throws IOException, ClassNotFoundException {
-        isNullable = in.readBoolean();
-        schema = new Schema.Parser().parse(in.readUTF());
-        recordName = in.readUTF();
+            throws IOException {
+        this.schema = readSchema(in);
     }
 }
 
