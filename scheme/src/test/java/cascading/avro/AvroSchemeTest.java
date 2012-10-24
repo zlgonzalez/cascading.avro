@@ -64,15 +64,16 @@ public class AvroSchemeTest extends Assert {
     public void testRoundTrip() throws Exception {
         final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
                 "test1.avsc"));
-        final AvroScheme scheme = new AvroScheme(schema);
 
         final Fields fields = new Fields("aBoolean", "anInt", "aLong",
                 "aDouble", "aFloat", "aBytes", "aFixed", "aNull", "aString",
                 "aList", "aMap", "aUnion");
 
-        final Hfs lfs = new Lfs(scheme, tempDir.getRoot().toString());
-        HadoopFlowProcess writeProcess = new HadoopFlowProcess(new JobConf());
-        final TupleEntryCollector collector = lfs.openForWrite(writeProcess);
+        String in = tempDir.getRoot().toString() + "/testRoundTrip/in";
+        String out = tempDir.getRoot().toString() + "/testRoundTrip/out";
+        Tap lfsSource = new Lfs(new AvroScheme(schema), in, SinkMode.REPLACE);
+        TupleEntryCollector write = lfsSource.openForWrite(new HadoopFlowProcess());
+
         List<Integer> aList = new ArrayList<Integer>();
         Map<String, Integer> aMap = new HashMap<String, Integer>();
         aMap.put("one", 1);
@@ -85,15 +86,26 @@ public class AvroSchemeTest extends Assert {
                 2, 3 });
         Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2,
                 bytesWritable, null, "test-string", aList, aMap, 5);
-        write(scheme, collector, new TupleEntry(fields, tuple));
-        write(scheme, collector, new TupleEntry(fields, new Tuple(false, 1, 2L,
+        write.add(new TupleEntry(fields, tuple));
+        write.add(new TupleEntry(fields, new Tuple(false, 1, 2L,
                 3.0, 4.0F, new BytesWritable(new byte[0]), new BytesWritable(
                         new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4,
                                 5, 6 }), null, "other string", aList, aMap, null)));
-        collector.close();
+        write.close();
 
-        HadoopFlowProcess readProcess = new HadoopFlowProcess(new JobConf());
-        final TupleEntryIterator iterator = lfs.openForRead(readProcess);
+
+        Pipe writePipe = new Pipe("tuples to avro");
+
+        Tap avroSink = new Lfs(new AvroScheme(schema), out);
+        Flow flow = new HadoopFlowConnector().connect(lfsSource, avroSink, writePipe);
+        flow.complete();
+        
+        // Now read it back in, and verify that the data/types match up.
+        Tap avroSource = new Lfs(new AvroScheme(schema), out);
+
+      
+        TupleEntryIterator iterator = avroSource.openForRead(new HadoopFlowProcess());
+        
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry1 = iterator.next();
 
@@ -368,11 +380,9 @@ public class AvroSchemeTest extends Assert {
             assertEquals("" + i, te.getString("stringField"));
             assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO, TestEnum.valueOf(te.getString("enumField")));
             
-            int bytesLength = ((BytesWritable)te.getObject("bytesField")).getBytes().length;
-            System.out.println("HERE ARE THE BYTES: " + ((BytesWritable)te.getObject("bytesField")).toString());
+            BytesWritable bytesWritable = ((BytesWritable)te.getObject("bytesField"));
             byte[] bytes = ((BytesWritable)te.getObject("bytesField")).getBytes();
-            assertEquals(i + 1, bytesLength);
-            for (int j = 0; j < bytesLength; j++) {
+            for (int j = 0; j < i+1; j++) {
                 assertEquals(j+1, bytes[j]);
             }
             
