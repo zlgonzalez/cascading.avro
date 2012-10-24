@@ -82,8 +82,10 @@ public class CascadingToAvro {
 			return toAvroArray(obj, schema);
 		
 		case STRING:
-		case ENUM:
 			return obj.toString();
+		case ENUM:
+			return toAvroEnum(obj, schema);
+			
 
 		case FIXED:
 			return toAvroFixed(obj, schema);
@@ -117,6 +119,9 @@ public class CascadingToAvro {
 	}
 	
 
+	protected static Object toAvroEnum(Object obj, Schema schema) {
+		return new GenericData.EnumSymbol(schema, obj.toString());
+	}
 
 	protected static Object toAvroFixed(Object obj, Schema schema) {
 		BytesWritable bytes = (BytesWritable) obj;
