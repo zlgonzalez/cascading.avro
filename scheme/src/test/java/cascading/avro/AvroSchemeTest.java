@@ -44,7 +44,6 @@ import cascading.pipe.Pipe;
 import cascading.scheme.hadoop.SequenceFile;
 import cascading.tap.SinkMode;
 import cascading.tap.Tap;
-import cascading.tap.hadoop.Hfs;
 import cascading.tap.hadoop.Lfs;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
@@ -283,6 +282,19 @@ public class AvroSchemeTest extends Assert {
             fail("Exception should be thrown as array type isn't a primitive");
         } catch (Exception e) {
         }
+        
+        try {
+            new AvroScheme(new Fields("map"), new Class[] { Map.class, Long.class });
+        } catch (Exception e) {
+            fail("Exception shouldn't be thrown as map type is valid");
+        }
+
+        try {
+            new AvroScheme(new Fields("map"), new Class[] { Map.class, List.class});
+            fail("Exception should be thrown as map type isn't a primitive");
+        } catch (Exception e) {
+        }
+
 
     }
 
@@ -554,8 +566,9 @@ public class AvroSchemeTest extends Assert {
         AvroScheme avroScheme = new AvroScheme(new Fields("a"), new Class[] { TestEnum.class });
         String jsonSchema = avroScheme.getJsonSchema();
         String enumField = String.format("{\"type\":\"enum\",\"name\":\"%s\",\"namespace\":\"%s\",\"symbols\":[\"ONE\",\"TWO\"]}",
-                        "AvroSchemeTest$TestEnum", TestEnum.class.getPackage().getName());
-        String expected = String.format("{\"type\":\"record\",\"name\":\"CascadingAvroRecord\",\"namespace\":\"\",\"fields\":[{\"name\":\"a\",\"type\":[\"null\",%s],\"doc\":\"\"}]}",
+        		"TestEnum", TestEnum.class.getPackage().getName());
+
+        String expected = String.format("{\"type\":\"record\",\"name\":\"CascadingAvroRecord\",\"namespace\":\"\",\"doc\":\"auto generated\",\"fields\":[{\"name\":\"a\",\"type\":[\"null\",%s],\"doc\":\"\"}]}",
                         enumField);
         assertEquals(expected, jsonSchema);
     }
