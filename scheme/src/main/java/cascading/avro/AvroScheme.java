@@ -56,10 +56,25 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	private String recordName;
 	private static String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
 
+
+	/**
+	 * Constructor to read from an Avro source without specifying the schema. If this is used as a source Scheme
+	 * a runtime error will be thrown
+	 **/
     public AvroScheme() {
         this(null);
     }
     
+    /**
+	 * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
+	 * Note that if schema is null, the Avro schema will be inferred from one of the source files (if this scheme
+	 * is being used as a source) or it will be inferred from the first output TupleEntry written (if this scheme
+	 * is being used as a sink). In this latter case, every field value in the first output TupleEntry must be
+	 * non-null, otherwise an exception will be thrown.
+	 * 
+	 * @param cascading Fields object
+	 * @param array of Class types
+	 */
     public AvroScheme(Fields fields, Class<?>[] types) {
         this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types));
     }
@@ -211,6 +226,11 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 			throw new RuntimeException(e);
 		}
 	}
+
+	// public void setRecordName(String name) {
+	// 	if (schema == null) throw new RuntimeException("Can't set the name of a non-existant schema");
+	// 	schema.set
+	// }
 	
 	static Schema readSchema(java.io.ObjectInputStream in) throws IOException {
         final Schema.Parser parser = new Schema.Parser();

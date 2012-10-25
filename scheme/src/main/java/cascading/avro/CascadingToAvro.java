@@ -55,14 +55,15 @@ public class CascadingToAvro {
 		}
 	};
 
-	public static Object[] parseTupleEntry(TupleEntry tuple, Schema writerSchema) {
-		if (!(writerSchema.getFields().size() == tuple.size())) {
+	public static Object[] parseTupleEntry(TupleEntry tupleEntry, Schema writerSchema) {
+		if (!(writerSchema.getFields().size() == tupleEntry.size())) {
 			throw new AvroRuntimeException("Arity mismatch between incoming tuple and schema");
 		}
 		Object [] result = new Object[writerSchema.getFields().size()];
 		
-		Fields fields = tuple.getFields();
+		Fields fields = tupleEntry.getFields();
 		List<Field> schemaFields = writerSchema.getFields();
+		Tuple tuple = tupleEntry.getTuple();
 		for (int i = 0; i < schemaFields.size(); i++) {
 			Field field = schemaFields.get(i);
 			
@@ -70,7 +71,7 @@ public class CascadingToAvro {
 //				System.out.println(fields);
 //				throw new RuntimeException("Tuple doesn't contain field: "+ field.name());
 //			}
-			Object obj = tuple.getTuple().getObject(i);
+			Object obj = tuple.getObject(i);
 			result[i] = toAvro(obj, field.schema());
 			
 		}
@@ -95,7 +96,16 @@ public class CascadingToAvro {
 			return toAvroBytes(obj);
 			
 		case RECORD: 
-			Object [] objs = parseTupleEntry((TupleEntry) obj, schema);
+
+			TupleEntry te;
+			// This is a *really* odd hack since casting to TupleEntry isn't working right.
+			if (obj instanceof Tuple) {
+				te = new TupleEntry((Tuple) obj);
+			}
+			else {
+				te = (TupleEntry) obj;
+			}
+			Object [] objs = parseTupleEntry(te, schema);
 			Record record = new Record(schema);
 			for(int i=0; i < objs.length; i++ ) record.put(i,  objs[i]);
 			return record;

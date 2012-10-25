@@ -126,7 +126,48 @@ public class AvroSchemeTest extends Assert {
         assertNull(readEntry2.get("aUnion"));
     }
 
+    @Test 
+    public void tupleInsideTupleTest() throws Exception {
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
+                "test2.avsc"));
+         String in = tempDir.getRoot().toString() + "/tupleInside/in";
+        String out = tempDir.getRoot().toString() + "/tupleInside/out";
+        Tap lfsSource = new Lfs(new AvroScheme(schema), in, SinkMode.REPLACE);
+        TupleEntryCollector write = lfsSource.openForWrite(new HadoopFlowProcess());
+        Fields fields = new Fields("innerRec", "outerField");
+        Tuple tuple = Tuple.size(2);
 
+        Tuple inner = Tuple.size(2);
+        inner.set(0,0);
+        inner.set(1,"the string");
+        TupleEntry record = new TupleEntry(new Fields("anInnerField1", "anInnerField2"), inner);
+        tuple.set(0,record);
+        tuple.set(1,"outer string");
+        write.add(new TupleEntry(fields, tuple));
+        write.close();
+
+
+        Pipe writePipe = new Pipe("tuples to avro");
+
+        Tap avroSink = new Lfs(new AvroScheme(schema), out);
+        Flow flow = new HadoopFlowConnector().connect(lfsSource, avroSink, writePipe);
+        flow.complete();
+        
+        // Now read it back in, and verify that the data/types match up.
+        Tap avroSource = new Lfs(new AvroScheme(schema), out);
+
+      
+        TupleEntryIterator iterator = avroSource.openForRead(new HadoopFlowProcess());
+        
+        assertTrue(iterator.hasNext());
+        final TupleEntry readEntry1 = iterator.next();
+
+        assertTrue(readEntry1.get(0) instanceof Tuple);
+        assertEquals(0, ((Tuple) readEntry1.getObject(0)).getInteger(0));
+        assertEquals("the string", ((Tuple) readEntry1.getObject(0)).getString(1));
+        assertEquals("outer string", readEntry1.getString(1));
+        
+    }
 
     @Test
     public void listOrMapInsideListTest() throws Exception {
