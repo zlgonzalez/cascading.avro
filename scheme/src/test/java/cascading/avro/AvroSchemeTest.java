@@ -30,6 +30,7 @@ import junit.framework.Assert;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.generic.GenericDatumReader;
+import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.util.Utf8;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.mapred.JobConf;
@@ -124,6 +125,49 @@ public class AvroSchemeTest extends Assert {
         final TupleEntry readEntry2 = iterator.next();
 
         assertNull(readEntry2.get("aUnion"));
+    }
+
+    @Test 
+    public void notUnpackedTest() throws Exception {
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
+                "test2.avsc"));
+        String in = tempDir.getRoot().toString() + "/recordtest/in";
+        String out = tempDir.getRoot().toString() + "/recordtest/out";
+        Tap lfsSource = new Lfs(new AvroScheme(schema, false), in, SinkMode.REPLACE);
+        TupleEntryCollector write = lfsSource.openForWrite(new HadoopFlowProcess());
+        Tuple tuple = Tuple.size(1);
+        Record record = new Record(schema);
+        String innerSchema = "{\"type\":\"record\", \"name\":\"nested\", \"namespace\": \"cascading.avro\", \"fields\": [{\"name\":\"anInnerField1\", \"type\":\"int\"}, {\"name\":\"anInnerField2\", \"type\":\"string\"} ] }";
+        Record inner = new Record(new Schema.Parser().parse(innerSchema));
+        inner.put(0, 0);
+        inner.put(1,"the string");
+        record.put(0, inner);
+        record.put(1,"outer string");
+        tuple.set(0,record);
+        TupleEntry te = new TupleEntry(new Fields("record"), tuple);
+        write.add(te);
+        write.close();
+
+
+        Pipe writePipe = new Pipe("tuples to avro");
+
+        Tap avroSink = new Lfs(new AvroScheme(schema, false), out);
+        Flow flow = new HadoopFlowConnector().connect(lfsSource, avroSink, writePipe);
+        flow.complete();
+        
+        // Now read it back in, and verify that the data/types match up.
+        Tap avroSource = new Lfs(new AvroScheme(schema, false), out);
+
+      
+        TupleEntryIterator iterator = avroSource.openForRead(new HadoopFlowProcess());
+        
+        assertTrue(iterator.hasNext());
+        final TupleEntry readEntry1 = iterator.next();
+
+        assertTrue(readEntry1.getObject(0) instanceof Record);
+        assertEquals(record.get(0), (Record)((Record) readEntry1.getObject(0)).get(0));
+        assertEquals(new Utf8((String)record.get(1)), ((Record) readEntry1.getObject(0)).get(1));
+        
     }
 
     @Test 
