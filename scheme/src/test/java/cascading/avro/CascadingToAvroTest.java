@@ -184,6 +184,16 @@ public class CascadingToAvroTest {
 		assertThat(outInt, is(5));
 	}
 	
+	@Test
+	public void testFromEnum() {
+		List<String> vals = new ArrayList<String>();
+		vals.add("ONE");
+		vals.add("TWO");
+		Schema enumSchema = Schema.createEnum("testEnum", null, null, vals);
+		GenericData.EnumSymbol avroEnum = (GenericData.EnumSymbol) CascadingToAvro.toAvro("ONE", enumSchema);
+		assertThat(avroEnum.toString(), is("ONE"));
+
+	}
 	
 	@Test 
 	public void testParseTupleEntry() {

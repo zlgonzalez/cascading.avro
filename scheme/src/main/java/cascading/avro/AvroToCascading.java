@@ -114,6 +114,7 @@ public class AvroToCascading {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
 	protected static Object fromAvroArray(Object obj, Schema schema) {
 		List<Object> array = new ArrayList<Object>();
 		for (Object element : (GenericData.Array) obj) {

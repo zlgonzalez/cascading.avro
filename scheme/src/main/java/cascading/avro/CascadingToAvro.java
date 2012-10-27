@@ -100,10 +100,10 @@ public class CascadingToAvro {
 			TupleEntry te;
 			// This is a *really* odd hack since casting to TupleEntry isn't working right.
 			if (obj instanceof Tuple) {
-				te = new TupleEntry((Tuple) obj);
+				te = new TupleEntry((cascading.tuple.Tuple) obj);
 			}
 			else {
-				te = (TupleEntry) obj;
+				te = (cascading.tuple.TupleEntry) obj;
 			}
 			Object [] objs = parseTupleEntry(te, schema);
 			Record record = new Record(schema);
