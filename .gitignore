@@ -1,18 +1,19 @@
+# Mac directory info
+
 .DS_Store
+
+# Eclipse files
+
 .classpath
 .project
 .settings/
 .local.*
-build
-target
-build-eclipse
-src/gen
-build.sh
-*.iml
-*.dot
-*.hprof
-trash
-private
+
+# Build results
+
+*/target/*
+*/build/*
+
+# Temporary files
+
 junit*.properties
-aws-keys.txt
-.externalToolBuilders
