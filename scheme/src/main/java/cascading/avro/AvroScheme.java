@@ -18,6 +18,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collection;
 
 
 import org.apache.avro.Schema;
@@ -26,7 +27,10 @@ import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.generic.GenericContainer;
+import org.apache.avro.mapred.AvroInputFormat;
 import org.apache.avro.mapred.AvroJob;
+import org.apache.avro.mapred.AvroOutputFormat;
+import org.apache.avro.mapred.AvroSerialization;
 import org.apache.avro.mapred.AvroWrapper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
@@ -127,6 +131,10 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		}
 	}
 
+	/**
+	 * Return the schema which has been set as a string
+	 * @return String representing the schema
+	 */
 	protected String getJsonSchema() {
 		if (schema == null) {
 			return "";
@@ -176,7 +184,9 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		if (schema == null ) {
 			throw new RuntimeException("Must provide sink schema");
 		}
-		AvroJob.setOutputSchema(conf, schema);
+		// Set the output schema and output format class
+		conf.set(AvroJob.OUTPUT_SCHEMA, schema.toString());
+		conf.setOutputFormat(AvroOutputFormat.class);
 	}
 
 	@Override
@@ -234,7 +244,19 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 			schema = getSourceSchema(flowProcess, tap);
 		}
 		retrieveSourceFields(flowProcess, tap);
-		AvroJob.setInputSchema(conf, schema);
+
+		// Set the input schema and input class
+		conf.set(AvroJob.INPUT_SCHEMA, schema.toString());
+		conf.setInputFormat(AvroInputFormat.class);
+		
+		// add AvroSerialization to io.serializations
+	    Collection<String> serializations = conf.getStringCollection("io.serializations");
+	    if (!serializations.contains(AvroSerialization.class.getName())) {
+	      serializations.add(AvroSerialization.class.getName());
+	      conf.setStrings("io.serializations",
+	                     serializations.toArray(new String[0]));
+	    }
+	    
 
 	}
 
@@ -263,10 +285,7 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		}
 	}
 
-	// public void setRecordName(String name) {
-	// 	if (schema == null) throw new RuntimeException("Can't set the name of a non-existant schema");
-	// 	schema.set
-	// }
+	
 	
 	static Schema readSchema(java.io.ObjectInputStream in) throws IOException {
 		final Schema.Parser parser = new Schema.Parser();
