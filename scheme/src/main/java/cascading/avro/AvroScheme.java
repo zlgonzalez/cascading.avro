@@ -56,7 +56,6 @@ import cascading.tuple.TupleEntry;
 @SuppressWarnings("serial")
 public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, Object[], Object[]>  {
 
-	private static final long serialVersionUID = 42L;
 	private Schema schema;
 	private String recordName;
 	private boolean packUnpack = true;
@@ -114,8 +113,8 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		this.packUnpack = packUnpack;
 
 		if (packUnpack == false) {
-			setSinkFields(new Fields("record"));
-			setSourceFields(new Fields("record"));
+			setSinkFields(Fields.ALL);
+			setSourceFields(Fields.ALL);
 		}
 		else if (schema == null) {
 			setSinkFields(Fields.ALL);
@@ -145,6 +144,14 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	
 	
 
+	/**
+	 * Sink method to take an outgoing tuple and write it to Avro. If the packUnpack option is set to true then 
+	 * the sink will convert the tuple into an Avro Record before passing it to the output. Otherwise it will just
+	 * pass the incoming Record through. 
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param sinkCall The cascading SinkCall object. Should be passed in by cascading automatically. 
+	 * @throws IOException 
+	 */
 	@Override
 	public void sink(
 		FlowProcess<JobConf> flowProcess,
@@ -165,7 +172,13 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		}
 	}
 
-	
+	/**
+	 * Sink prepare method called by cascading once on each reducer. This method stuffs the schema into a context
+	 * for easy access by the sink method. 
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param sinkCall The cascading SinkCall object. Should be passed in by cascading automatically. 
+	 * @throws IOException 
+	 */
 	@Override
 	public void sinkPrepare(
 		FlowProcess<JobConf> flowProcess,
@@ -175,7 +188,15 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 
 	}
 
-	
+	/**
+	 * sinkConfInit is called by cascading to set up the sinks. This happens on the client side before the job is distributed.
+	 * There is a check for the presence of a schema and an exception is thrown if none has been provided.
+	 * After the schema check the conf object is given the options that Avro needs.
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param tap The cascading Tap object. Should be passed in by cascading automatically. 
+	 * @param conf The Hadoop JobConf object. This is passed in by cascading automatically. 
+	 * @throws RuntimeException If no schema is present this halts the entire process.  
+	 */
 	@Override
 	public void sinkConfInit(
 		FlowProcess<JobConf> flowProcess,
@@ -187,15 +208,32 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		// Set the output schema and output format class
 		conf.set(AvroJob.OUTPUT_SCHEMA, schema.toString());
 		conf.setOutputFormat(AvroOutputFormat.class);
+
+		// add AvroSerialization to io.serializations
+	    Collection<String> serializations = conf.getStringCollection("io.serializations");
+	    if (!serializations.contains(AvroSerialization.class.getName())) {
+	      serializations.add(AvroSerialization.class.getName());
+	      conf.setStrings("io.serializations",
+	                     serializations.toArray(new String[0]));
+	    }
 	}
 
+	/**
+	 * This method is called by cascading to set up the incoming fields. If a schema isn't present then it will
+	 * go and peek at the input data to retrieve one. If packUnpack is false then it sets the incoming fields to be Fields.ALL,
+	 * there should only be one incoming field in this case. Otherwise it get the field names from the schema
+	 * and sets the incoming fields to be the same.
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param tap The cascading Tap object. Should be passed in by cascading automatically. 
+	 * @return Fields The source cascading fields. 
+	 */
 	@Override
 	public Fields retrieveSourceFields(FlowProcess<JobConf> flowProcess, Tap tap) {
 		if (schema == null) { 
 			schema = getSourceSchema(flowProcess, tap);
 		}
 		if (packUnpack == false) {
-			setSourceFields(new Fields("record"));
+			setSourceFields(Fields.ALL);
 		}
 		else {
 			int n = schema.getFields().size();
@@ -210,10 +248,18 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	}
 
 
-
+	/**
+	 * Source method to take an incoming Avro record and make it a Tuple. If the packUnpack option is set to true then 
+	 * the source will convert the Avro Record into a Cascading Tuple. Otherwise it will just
+	 * pass the incoming Record through in the first Field of a tuple. 
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param sourceCall The cascading SourceCall object. Should be passed in by cascading automatically.
+	 * @return boolean true on successful parsing and collection, false on failure.  
+	 * @throws IOException 
+	 */
 	@Override
 	public boolean source(
-		FlowProcess<JobConf> jobConf,
+		FlowProcess<JobConf> flowProcess,
 		SourceCall<Object[], RecordReader> sourceCall)
 	throws IOException {
 
@@ -235,6 +281,15 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		return true;
 	}
 
+	/**
+	 * sourceConfInit is called by cascading to set up the sources. This happens on the client side before the job is distributed.
+	 * There is a check for the presence of a schema and if none has been provided the data is peeked at to get a schema.
+	 * After the schema check the conf object is given the options that Avro needs.
+	 * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+	 * @param tap The cascading Tap object. Should be passed in by cascading automatically. 
+	 * @param conf The Hadoop JobConf object. This is passed in by cascading automatically. 
+	 * @throws RuntimeException If no schema is present this halts the entire process.  
+	 */
 	@Override
 	public void sourceConfInit(
 		FlowProcess<JobConf> flowProcess,
@@ -261,6 +316,13 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	}
 
 
+	/**
+	 * This method peeks at the source data to get a schema when none has been provided. 
+	 * @param flowProcess The cascading FlowProcess object for this flow. 
+	 * @param tap The cascading Tap object. 
+	 * @return Schema The schema of the peeked at data. 
+	 * @throws RuntimeException If no schema can be found then we can't proceed. 
+	 */
 	private Schema getSourceSchema(FlowProcess<JobConf> flowProcess, Tap tap) {
 		try {
 			if (tap instanceof CompositeTap) {
@@ -286,7 +348,11 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	}
 
 	
-	
+	/**
+	 * Helper method to read in a schema when deserializing the object
+	 * @param in The ObjectInputStream containing the serialized object
+	 * @return Schema The parsed schema. 
+	 */
 	static Schema readSchema(java.io.ObjectInputStream in) throws IOException {
 		final Schema.Parser parser = new Schema.Parser();
 		return parser.parse(in.readUTF());
