@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 
 
 import org.apache.avro.Schema;
@@ -36,6 +37,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
@@ -210,12 +212,12 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		conf.setOutputFormat(AvroOutputFormat.class);
 
 		// add AvroSerialization to io.serializations
-	    Collection<String> serializations = conf.getStringCollection("io.serializations");
-	    if (!serializations.contains(AvroSerialization.class.getName())) {
-	      serializations.add(AvroSerialization.class.getName());
-	      conf.setStrings("io.serializations",
-	                     serializations.toArray(new String[0]));
-	    }
+		Collection<String> serializations = conf.getStringCollection("io.serializations");
+		if (!serializations.contains(AvroSerialization.class.getName())) {
+			serializations.add(AvroSerialization.class.getName());
+			conf.setStrings("io.serializations",
+				serializations.toArray(new String[0]));
+		}
 	}
 
 	/**
@@ -230,7 +232,12 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	@Override
 	public Fields retrieveSourceFields(FlowProcess<JobConf> flowProcess, Tap tap) {
 		if (schema == null) { 
-			schema = getSourceSchema(flowProcess, tap);
+			try {
+				schema = getSourceSchema(flowProcess, tap);
+			}
+			catch (IOException e) {
+				throw new RuntimeException("Can't get schema from data source");
+			}
 		}
 		if (packUnpack == false) {
 			setSourceFields(Fields.ALL);
@@ -296,7 +303,12 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		Tap<JobConf, RecordReader, OutputCollector> tap,
 		JobConf conf) {
 		if (schema == null) {
-			schema = getSourceSchema(flowProcess, tap);
+			try {
+				schema = getSourceSchema(flowProcess, tap);
+			}
+			catch (IOException e) {
+				throw new RuntimeException("Can't get schema from data source");
+			}
 		}
 		retrieveSourceFields(flowProcess, tap);
 
@@ -305,13 +317,13 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 		conf.setInputFormat(AvroInputFormat.class);
 		
 		// add AvroSerialization to io.serializations
-	    Collection<String> serializations = conf.getStringCollection("io.serializations");
-	    if (!serializations.contains(AvroSerialization.class.getName())) {
-	      serializations.add(AvroSerialization.class.getName());
-	      conf.setStrings("io.serializations",
-	                     serializations.toArray(new String[0]));
-	    }
-	    
+		Collection<String> serializations = conf.getStringCollection("io.serializations");
+		if (!serializations.contains(AvroSerialization.class.getName())) {
+			serializations.add(AvroSerialization.class.getName());
+			conf.setStrings("io.serializations",
+				serializations.toArray(new String[0]));
+		}
+
 
 	}
 
@@ -323,31 +335,43 @@ public class AvroScheme	extends	Scheme<JobConf, RecordReader, OutputCollector, O
 	 * @return Schema The schema of the peeked at data. 
 	 * @throws RuntimeException If no schema can be found then we can't proceed. 
 	 */
-	private Schema getSourceSchema(FlowProcess<JobConf> flowProcess, Tap tap) {
-		try {
-			if (tap instanceof CompositeTap) {
-				tap = (Tap) ((CompositeTap) tap).getChildTaps().next();
-			}
-			final String file = tap.getIdentifier();
-			Path p = new Path(file);
-			Configuration conf = new Configuration();
-			final FileSystem fs = p.getFileSystem(conf);
-			for (FileStatus status : fs.listStatus(p)) {
-				p = status.getPath();
+	private Schema getSourceSchema(FlowProcess<JobConf> flowProcess, Tap tap) throws IOException {
+		
+		if (tap instanceof CompositeTap) {
+			tap = (Tap) ((CompositeTap) tap).getChildTaps().next();
+		}
+		final String path = tap.getIdentifier();
+		Path p = new Path(path);
+		final FileSystem fs = p.getFileSystem(flowProcess.getConfigCopy());
+		LinkedList<FileStatus> statuses = new LinkedList<FileStatus> (Arrays.asList(fs.globStatus(p, filter)));
+		while (!statuses.isEmpty()) {
+			FileStatus status = statuses.pop();
+			p = status.getPath();
+			if (status.isDir()) {
+				statuses.addAll(Arrays.asList(fs.listStatus(p, filter)));
+				continue;
+			}	
+			else if (fs.isFile(p)) {
 				// no need to open them all
 				InputStream stream = new BufferedInputStream(fs.open(p));
 				DataFileStream reader = new DataFileStream(stream, new GenericDatumReader());
 				Schema dataSchema = reader.getSchema();
 				return dataSchema;
 			}
-			
-			throw new RuntimeException("no schema found in " + file);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
 		}
+		// couldn't find any Avro files, can't proceed
+		throw new RuntimeException("no avro files found in " + path);
 	}
 
-	
+
+	private static PathFilter filter = new PathFilter() {
+		@Override
+		public boolean accept(Path path) {
+			return !path.getName().startsWith("_");
+		}
+	};
+
+
 	/**
 	 * Helper method to read in a schema when deserializing the object
 	 * @param in The ObjectInputStream containing the serialized object

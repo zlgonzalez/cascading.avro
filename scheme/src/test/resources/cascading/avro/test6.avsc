@@ -1,0 +1,9 @@
+{ 	
+	"type":"record", 
+	"name":"wordcount",
+	"namespace":"cascading.avro",
+	"fields":[
+		{"name":"token", "type":"string"},
+		{"name":"count", "type":"long"}
+	]
+}
