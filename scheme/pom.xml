@@ -31,7 +31,7 @@
 
 <properties>
 	<hadoop.version>1.0.2</hadoop.version>
-	<cascading.version>2.0.4</cascading.version>
+	<cascading.version>2.1.0</cascading.version>
 	<avro.version>1.7.2</avro.version>
 </properties>
 
