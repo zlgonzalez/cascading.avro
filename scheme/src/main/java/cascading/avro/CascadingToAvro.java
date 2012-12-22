@@ -99,19 +99,22 @@ public class CascadingToAvro {
                 return toAvroBytes(obj);
 
             case RECORD:
-                Object[] objs;
-                if (obj instanceof Tuple) {
-                    objs = parseTuple((Tuple) obj, schema);
-                } else {
-                    objs = parseTupleEntry((TupleEntry) obj, schema);
-                }
+                if (obj instanceof Record) return obj;
+                else {
+                    Object[] objs;
+                    if (obj instanceof Tuple) {
+                        objs = parseTuple((Tuple) obj, schema);
+                    } else {
+                        objs = parseTupleEntry((TupleEntry) obj, schema);
+                    }
 
-                Record record = new Record(schema);
-                for (int i = 0; i < objs.length; i++) {
-                    record.put(i, objs[i]);
+                    Record record = new Record(schema);
+                    for (int i = 0; i < objs.length; i++) {
+                        record.put(i, objs[i]);
+                    }
+
+                    return record;
                 }
-                
-                return record;
 
             case MAP:
                 return toAvroMap(obj, schema);
@@ -138,9 +141,14 @@ public class CascadingToAvro {
     }
 
     protected static Object toAvroFixed(Object obj, Schema schema) {
-        BytesWritable bytes = (BytesWritable) obj;
-        Fixed fixed = new Fixed(schema, bytes.getBytes());
-        return fixed;
+        if (obj instanceof Fixed) {
+            return obj;
+        }
+        else {
+            BytesWritable bytes = (BytesWritable) obj;
+            Fixed fixed = new Fixed(schema, bytes.getBytes());
+            return fixed;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -176,9 +184,14 @@ public class CascadingToAvro {
     }
 
     protected static Object toAvroBytes(Object obj) {
-        BytesWritable inBytes = (BytesWritable) obj;
-        ByteBuffer buffer = ByteBuffer.wrap(inBytes.getBytes());
-        return buffer;
+        if (obj instanceof ByteBuffer) {
+            return obj;
+        }
+        else {
+            BytesWritable inBytes = (BytesWritable) obj;
+            ByteBuffer buffer = ByteBuffer.wrap(inBytes.getBytes());
+            return buffer;
+        }
     }
 
     protected static Object toAvroArray(Object obj, Schema schema) {

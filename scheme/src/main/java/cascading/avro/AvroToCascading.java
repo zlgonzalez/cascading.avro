@@ -70,10 +70,7 @@ public class AvroToCascading {
                 return fromAvroBytes((ByteBuffer) obj);
 
             case RECORD:
-                Object[] objs = parseRecord((Record) obj, schema);
-                Tuple result = new Tuple();
-                result.addAll(objs);
-                return result;
+                return new AvroTuple((Record) obj);
 
             case MAP:
                 return fromAvroMap(obj, schema);

@@ -133,7 +133,7 @@ public class AvroSchemeTest extends Assert {
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry2 = iterator.next();
 
-        assertNull(readEntry2.get("aUnion"));
+        assertNull(readEntry2.getObject("aUnion"));
     }
 
     @Test 
@@ -215,7 +215,7 @@ public class AvroSchemeTest extends Assert {
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry1 = iterator.next();
 
-        assertTrue(readEntry1.get(0) instanceof Tuple);
+        assertTrue(readEntry1.getObject(0) instanceof Tuple);
         assertEquals(0, ((Tuple) readEntry1.getObject(0)).getInteger(0));
         assertEquals("the string", ((Tuple) readEntry1.getObject(0)).getString(1));
         assertEquals("outer string", readEntry1.getString(1));

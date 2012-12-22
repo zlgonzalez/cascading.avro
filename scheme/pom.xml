@@ -30,9 +30,9 @@
 </scm>
 
 <properties>
-	<hadoop.version>1.0.2</hadoop.version>
+	<hadoop.version>1.0.3</hadoop.version>
 	<cascading.version>2.1.0</cascading.version>
-	<avro.version>1.7.2</avro.version>
+	<avro.version>1.7.3</avro.version>
 </properties>
 
 <repositories>
@@ -85,12 +85,6 @@
 		<version>${avro.version}</version>
 	</dependency>
 	<dependency>
-		<groupId>org.apache.hadoop</groupId>
-		<artifactId>hadoop-core</artifactId>
-		<version>${hadoop.version}</version>
-		<scope>provided</scope>
-	</dependency>
-	<dependency>
 		<groupId>cascading</groupId>
 		<artifactId>cascading-core</artifactId>
 		<version>${cascading.version}</version>
@@ -100,17 +94,15 @@
 		<artifactId>cascading-hadoop</artifactId>
 		<version>${cascading.version}</version>
 	</dependency>
-	<dependency>
-		<groupId>cascading</groupId>
-		<artifactId>cascading-local</artifactId>
-		<version>${cascading.version}</version>
-	</dependency>
-	<dependency>
-		<groupId>cascading</groupId>
-		<artifactId>cascading-xml</artifactId>
-		<version>${cascading.version}</version>
-	</dependency>
-	<!-- test -->
+    <dependency>
+        <groupId>org.apache.hadoop</groupId>
+        <artifactId>hadoop-core</artifactId>
+        <version>${hadoop.version}</version>
+        <scope>provided</scope>
+    </dependency>
+
+
+    <!-- test -->
 	<dependency>
 		<groupId>junit</groupId>
 		<artifactId>junit</artifactId>
