@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 
+@SuppressWarnings("unchecked")
 public class PackedAvroSchemeTest extends Assert {
 
   @Rule
@@ -60,7 +61,7 @@ public class PackedAvroSchemeTest extends Assert {
     final TupleEntry readEntry1 = iterator.next();
 
     assertTrue(readEntry1.getObject(0) instanceof GenericData.Record);
-    assertEquals(record.get(0), (GenericData.Record)((GenericData.Record) readEntry1.getObject(0)).get(0));
+    assertEquals(record.get(0), ((GenericData.Record) readEntry1.getObject(0)).get(0));
     assertEquals(new Utf8((String)record.get(1)), ((GenericData.Record) readEntry1.getObject(0)).get(1));
 
 

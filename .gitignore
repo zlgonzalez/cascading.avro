@@ -9,6 +9,12 @@
 .settings/
 .local.*
 
+# IntelliJ files
+
+*.iml
+*.imp
+.idea
+
 # Build results
 
 */target/*

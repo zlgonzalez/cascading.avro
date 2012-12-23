@@ -100,7 +100,7 @@ public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
    */
   @Override
   public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
-    RecordReader<AvroWrapper<T>, Writable> input = sourceCall.getInput();
+    @SuppressWarnings("unchecked") RecordReader<AvroWrapper<T>, Writable> input = sourceCall.getInput();
     AvroWrapper<T> wrapper = input.createKey();
     if (!input.next(wrapper, input.createValue())) {
       return false;
