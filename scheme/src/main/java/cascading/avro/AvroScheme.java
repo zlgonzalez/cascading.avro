@@ -25,7 +25,6 @@ import cascading.tuple.TupleEntry;
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.file.DataFileStream;
-import org.apache.avro.generic.GenericContainer;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.mapred.*;
@@ -49,7 +48,7 @@ import java.util.LinkedList;
 
 public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, Object[], Object[]> {
 
-  private Schema schema;
+  protected Schema schema;
   private static final String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
 
 

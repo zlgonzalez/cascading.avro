@@ -1,14 +1,116 @@
 package cascading.avro;
 
-public class PackedAvroScheme extends AvroScheme {
+import cascading.flow.FlowProcess;
+import cascading.scheme.SinkCall;
+import cascading.scheme.SourceCall;
+import cascading.tap.Tap;
+import cascading.tuple.Fields;
+import cascading.tuple.Tuple;
+import cascading.tuple.TupleEntry;
+import org.apache.avro.Schema;
+import org.apache.avro.generic.GenericContainer;
+import org.apache.avro.generic.GenericData;
+import org.apache.avro.mapred.AvroWrapper;
+import org.apache.avro.specific.SpecificRecord;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.mapred.OutputCollector;
+import org.apache.hadoop.mapred.RecordReader;
+
+import java.io.IOException;
+
+public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
   /**
    * This scheme should be used when you don't want cascading.avro to automatically unpack or pack your Avro objects.
    * The constructors are similar to the super class but there is only ever one field incoming or outgoing.
    */
 
 
-  public PackedAvroScheme() {
 
+  public PackedAvroScheme() {
+    this(null);
   }
+
+  public PackedAvroScheme(Schema schema) {
+    this.schema = schema;
+    if (schema == null) {
+      setSinkFields(Fields.ALL);
+      setSourceFields(Fields.UNKNOWN);
+    } else {
+      String schemaName = schema.getName();
+      Fields cascadingFields = new Fields(schemaName);
+      setSinkFields(cascadingFields);
+      setSourceFields(cascadingFields);
+    }
+  }
+
+  /**
+   * Sink method to take an outgoing tuple and write it to Avro. In this scheme the incoming avro is passed through.
+   *
+   * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+   * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
+   * @throws java.io.IOException
+   */
+  @Override
+  public void sink(FlowProcess<JobConf> flowProcess, SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
+    TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
+    //noinspection unchecked
+    sinkCall.getOutput().collect(new AvroWrapper<T>((T) tupleEntry.getObject(getSinkFields())), NullWritable.get());
+  }
+
+  /**
+   * In this schema nothing needs to be done for the sinkPrepare.
+   *
+   * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+   * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
+   * @throws java.io.IOException
+   */
+  @Override
+  public void sinkPrepare(FlowProcess<JobConf> flowProcess, SinkCall<Object[], OutputCollector> sinkCall)
+      throws IOException {}
+
+  /**
+   * Sets to Fields.UNKNOWN
+   *
+   * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+   * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
+   * @return Fields The source cascading fields.
+   */
+  @Override
+  public Fields retrieveSourceFields(FlowProcess<JobConf> flowProcess, Tap tap) {
+    if (schema == null) {
+      setSourceFields(Fields.UNKNOWN);
+    }
+    else {
+      setSourceFields(new Fields(schema.getName()));
+    }
+    return getSourceFields();
+  }
+
+  /**
+   * Source method to take an incoming Avro record and make it a Tuple. If the packUnpack option is set to true then
+   * the source will convert the Avro Record into a Cascading Tuple. Otherwise it will just
+   * pass the incoming Record through in the first Field of a tuple.
+   *
+   * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
+   * @param sourceCall  The cascading SourceCall object. Should be passed in by cascading automatically.
+   * @return boolean true on successful parsing and collection, false on failure.
+   * @throws java.io.IOException
+   */
+  @Override
+  public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
+    RecordReader<AvroWrapper<T>, Writable> input = sourceCall.getInput();
+    AvroWrapper<T> wrapper = input.createKey();
+    if (!input.next(wrapper, input.createValue())) {
+      return false;
+    }
+    T record = wrapper.datum();
+    Tuple tuple = sourceCall.getIncomingEntry().getTuple();
+    tuple.clear();
+    tuple.add(record);
+    return true;
+  }
+
 
 }
