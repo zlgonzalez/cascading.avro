@@ -23,7 +23,8 @@ import java.io.IOException;
 public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
   /**
    * This scheme should be used when you don't want cascading.avro to automatically unpack or pack your Avro objects.
-   * The constructors are similar to the super class but there is only ever one field incoming or outgoing.
+   * The constructors are similar to the super class but there is only ever one field incoming or outgoing. The parameter
+   * is the type of Avro record to read.
    */
 
 
@@ -32,6 +33,11 @@ public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
     this(null);
   }
 
+  /**
+   * Constructs a scheme from an Avro schema and names the single field using the Schema name.
+   *
+   * @param schema The avro schema to use
+   */
   public PackedAvroScheme(Schema schema) {
     this.schema = schema;
     if (schema == null) {
@@ -71,7 +77,7 @@ public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
       throws IOException {}
 
   /**
-   * Sets to Fields.UNKNOWN
+   * Sets to Fields.UNKNOWN if no schema is present, otherwise uses the name of the Schema.
    *
    * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
    * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
@@ -89,9 +95,7 @@ public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
   }
 
   /**
-   * Source method to take an incoming Avro record and make it a Tuple. If the packUnpack option is set to true then
-   * the source will convert the Avro Record into a Cascading Tuple. Otherwise it will just
-   * pass the incoming Record through in the first Field of a tuple.
+   * Reads in Avro records of type T and adds them as the first field in a tuple.
    *
    * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
    * @param sourceCall  The cascading SourceCall object. Should be passed in by cascading automatically.

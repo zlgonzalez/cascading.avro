@@ -54,7 +54,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
 
   /**
-   * Constructor to read from an Avro source without specifying the schema. If this is used as a source Scheme
+   * Constructor to read from an Avro source without specifying the schema. If this is used as a sink Scheme
    * a runtime error will be thrown.
    */
   public AvroScheme() {
@@ -63,10 +63,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
   /**
    * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
-   * Note that if schema is null, the Avro schema will be inferred from one of the source files (if this scheme
-   * is being used as a source) or it will be inferred from the first output TupleEntry written (if this scheme
-   * is being used as a sink). In this latter case, every field value in the first output TupleEntry must be
-   * non-null, otherwise an exception will be thrown.
+   * This is the legacy constructor format. A Fields object and the corresponding types must be provided.
    *
    * @param fields Fields object from cascading
    * @param types  array of Class types
@@ -78,7 +75,9 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
   /**
    * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
-   * If this is used as a source Scheme a runtime error will be thrown.
+   * Note that if schema is null, the Avro schema will be inferred from one of the source files (if this scheme
+   * is being used as a source). At the moment, we are unable to infer a schema for a sink (this will change soon with
+   * a new version of cascading though).
    *
    * @param schema     Avro schema, or null if this is to be inferred from source file/outgoing TupleEntry data.
    */
@@ -113,9 +112,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
 
   /**
-   * Sink method to take an outgoing tuple and write it to Avro. If the packUnpack option is set to true then
-   * the sink will convert the tuple into an Avro Record before passing it to the output. Otherwise it will just
-   * pass the incoming Record through.
+   * Sink method to take an outgoing tuple and write it to Avro.
    *
    * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
    * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
@@ -189,10 +186,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
   /**
    * This method is called by cascading to set up the incoming fields. If a schema isn't present then it will
-   * go and peek at the input data to retrieve one. If packUnpack is false then it sets the incoming fields
-   * to be Fields.ALL,
-   * there should only be one incoming field in this case. Otherwise it get the field names from the schema
-   * and sets the incoming fields to be the same.
+   * go and peek at the input data to retrieve one. The field names from the schema are used to name the cascading fields.
    *
    * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
    * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
@@ -220,9 +214,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
 
 
   /**
-   * Source method to take an incoming Avro record and make it a Tuple. If the packUnpack option is set to true then
-   * the source will convert the Avro Record into a Cascading Tuple. Otherwise it will just
-   * pass the incoming Record through in the first Field of a tuple.
+   * Source method to take an incoming Avro record and make it a Tuple.
    *
    * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
    * @param sourceCall  The cascading SourceCall object. Should be passed in by cascading automatically.
