@@ -64,6 +64,7 @@ import cascading.operation.regex.RegexSplitGenerator;
 /**
  * Class AvroSchemeTest
  */
+@SuppressWarnings("unchecked")
 public class AvroSchemeTest extends Assert {
 
     @Rule
@@ -214,7 +215,7 @@ public class AvroSchemeTest extends Assert {
 
         List<Integer> outListOfInt = (List) ((List) readEntry1
             .getObject("aListOfListOfInt")).get(0);
-        Map<Utf8, Long> outMapToLong = (Map) ((List) readEntry1
+        Map<String, Long> outMapToLong = (Map) ((List) readEntry1
             .getObject("aListOfMapToLong")).get(0);
 
         assertEquals(Integer.valueOf(0), outListOfInt.get(0));
@@ -362,7 +363,6 @@ public class AvroSchemeTest extends Assert {
             String.class, BytesWritable.class, List.class, Long.class, Map.class, String.class, TestEnum.class};
             final String in = tempDir.getRoot().toString() + "/testRoundTrip2/in";
             final String out = tempDir.getRoot().toString() + "/testRoundTrip2/out";
-            final String verifyout = tempDir.getRoot().toString() + "/testRoundTrip2/verifyout";
 
             final int numRecords = 2;
 
@@ -443,7 +443,6 @@ public class AvroSchemeTest extends Assert {
                 assertEquals("" + i, te.getString("stringField"));
                 assertEquals(i == 0 ? TestEnum.ONE : TestEnum.TWO, TestEnum.valueOf(te.getString("enumField")));
 
-                BytesWritable bytesWritable = ((BytesWritable)te.getObject("bytesField"));
                 byte[] bytes = ((BytesWritable)te.getObject("bytesField")).getBytes();
                 for (int j = 0; j < i+1; j++) {
                     assertEquals(j+1, bytes[j]);
@@ -452,7 +451,6 @@ public class AvroSchemeTest extends Assert {
                 List<Long> longArray = (List<Long>) te.getObject("arrayOfLongsField");
                 assertEquals(i + 1, longArray.size());
                 for (int j = 0; j < longArray.size(); j++) {
-                    assertTrue(longArray.get(j) instanceof Long);
                     assertEquals(Long.valueOf(j), longArray.get(j));
                 }
 
@@ -638,7 +636,7 @@ public class AvroSchemeTest extends Assert {
 
     // create source and sink taps
         Tap docTap = new Lfs( new TextLine( new Fields("text")), docPath );
-        Tap wcTap = new Lfs( new AvroScheme( schema ), wcPath, true );
+        Tap wcTap = new Lfs( new AvroScheme( schema ), wcPath+"/nested", SinkMode.REPLACE );
 
     // specify a regex operation to split the "document" text lines into a token stream
         Fields token = new Fields( "token" );
@@ -665,7 +663,7 @@ public class AvroSchemeTest extends Assert {
     // create source and sink taps
     // Source is Avro, note there is no schema needed. 
         Tap avroTap = new Lfs( new AvroScheme(), wcPath );
-        Tap finalTap = new Lfs( new TextDelimited(), finalPath, true );
+        Tap finalTap = new Lfs( new TextDelimited(), finalPath, SinkMode.REPLACE );
 
         Pipe avroPipe = new Pipe( "wordcount" );
         avroPipe = new GroupBy( avroPipe, new Fields("count") );

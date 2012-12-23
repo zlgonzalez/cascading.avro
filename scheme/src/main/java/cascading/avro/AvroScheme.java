@@ -44,6 +44,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 
 public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, Object[], Object[]> {
@@ -206,12 +207,13 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
         throw new RuntimeException("Can't get schema from data source");
       }
     }
-
     Fields cascadingFields = new Fields();
-    for (Field avroField : schema.getFields()) {
-      cascadingFields = cascadingFields.append(new Fields(avroField.name()));
+    if (schema.getType().equals(Schema.Type.NULL)) {
+      cascadingFields = Fields.NONE;
+    } else {
+      for (Field avroField : schema.getFields())
+        cascadingFields = cascadingFields.append(new Fields(avroField.name()));
     }
-
     setSourceFields(cascadingFields);
     return getSourceFields();
   }
@@ -295,21 +297,28 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
     final String path = tap.getIdentifier();
     Path p = new Path(path);
     final FileSystem fs = p.getFileSystem(flowProcess.getConfigCopy());
-    LinkedList<FileStatus> statuses = new LinkedList<FileStatus>(Arrays.asList(fs.globStatus(p, filter)));
-    while (!statuses.isEmpty()) {
-      FileStatus status = statuses.pop();
-      p = status.getPath();
-      if (status.isDir()) {
-        statuses.addAll(Arrays.asList(fs.listStatus(p, filter)));
-      } else if (fs.isFile(p)) {
+    // Get all the input dirs
+    List<FileStatus> statuses = new LinkedList<FileStatus>(Arrays.asList(fs.globStatus(p, filter)));
+    // Now get all the things that are one level down
+    for (FileStatus status : new LinkedList<FileStatus>(statuses)) {
+      if (status.isDir())
+        for(FileStatus child : Arrays.asList(fs.listStatus(status.getPath(), filter))) {
+          if (child.isDir()) {
+            statuses.addAll(Arrays.asList(fs.listStatus(child.getPath(), filter)));
+          }
+        }
+    }
+    for (FileStatus status : statuses) {
+      Path statusPath = status.getPath();
+      if (fs.isFile(statusPath)) {
         // no need to open them all
-        InputStream stream = new BufferedInputStream(fs.open(p));
+        InputStream stream = new BufferedInputStream(fs.open(statusPath));
         @SuppressWarnings("unchecked") DataFileStream reader = new DataFileStream(stream, new GenericDatumReader());
         return reader.getSchema();
       }
     }
-    // couldn't find any Avro files, can't proceed
-    throw new RuntimeException("no avro files found in " + path);
+    // couldn't find any Avro files, return null schema
+    return Schema.create(Schema.Type.NULL);
   }
 
 
