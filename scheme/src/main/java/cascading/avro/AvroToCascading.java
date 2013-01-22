@@ -52,6 +52,9 @@ public class AvroToCascading {
     }
 
     protected static Object fromAvro(Object obj, Schema schema) {
+    	if (obj == null) {
+    		return null;
+    	}
         switch (schema.getType()) {
 
             case UNION:

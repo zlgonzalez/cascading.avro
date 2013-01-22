@@ -172,4 +172,38 @@ public class AvroToCascadingTest {
         assertThat((Integer) output[10], is(5));
     }
 
+    @Test
+    public void testNullFieldValue() {
+    	String schemaStr = "{" +  	
+    			"\"type\":\"record\", " + 
+    		    "\"name\": \"nulltest\"," +
+    			"\"fields\":[" +
+    			"	{\"name\":\"afield\", \"type\":\"string\"}," +
+    	        "   {\"name\":\"aMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}}," +
+    	        "   {\"name\":\"bMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}}]}";
+
+        Schema schema = new Schema.Parser().parse(schemaStr);
+        Record rec = new Record(schema);
+        rec.put(0, null);
+        Map<Utf8, String> aMap = new HashMap<Utf8, String>();
+        aMap.put(new Utf8("one"), "foo");
+        aMap.put(new Utf8("two"), null);
+        rec.put(1, aMap);
+
+        Map<Utf8, String> bMap = null;
+        rec.put(2, bMap);
+
+        Object[] output = AvroToCascading.parseRecord(rec, rec.getSchema());
+
+        assertThat(output[0], nullValue());
+
+        Map<String, String> outMap = (Map<String, String>) output[1];
+        assertThat(outMap.get("one"), is("foo"));
+        assertThat(outMap.get("two"), nullValue());
+
+        assertThat(output[2], nullValue());
+
+    }
+
+
 }
