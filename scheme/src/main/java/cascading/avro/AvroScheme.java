@@ -304,6 +304,8 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
         for (FileStatus child : Arrays.asList(fs.listStatus(status.getPath(), filter))) {
           if (child.isDir()) {
             statuses.addAll(Arrays.asList(fs.listStatus(child.getPath(), filter)));
+          } else if (fs.isFile(child.getPath())) {
+            statuses.add(child);
           }
         }
     }
