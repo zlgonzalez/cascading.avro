@@ -240,7 +240,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
       SourceCall<Object[], RecordReader> sourceCall)
       throws IOException {
 
-    RecordReader<AvroWrapper<Record>, Writable> input = sourceCall.getInput();
+    @SuppressWarnings("unchecked") RecordReader<AvroWrapper<Record>, Writable> input = sourceCall.getInput();
     AvroWrapper<Record> wrapper = input.createKey();
     if (!input.next(wrapper, input.createValue())) {
       return false;
