@@ -14,6 +14,7 @@
 
 package cascading.avro;
 
+import cascading.avro.serialization.AvroSpecificRecordSerialization;
 import cascading.flow.FlowProcess;
 import cascading.scheme.Scheme;
 import cascading.scheme.SinkCall;
@@ -326,6 +327,7 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
     Collection<String> serializations = conf.getStringCollection("io.serializations");
     if (!serializations.contains(AvroSerialization.class.getName())) {
       serializations.add(AvroSerialization.class.getName());
+      serializations.add(AvroSpecificRecordSerialization.class.getName());
     }
 
 

@@ -21,7 +21,6 @@ package cascading.avro.serialization;
 import org.apache.avro.Schema;
 import org.apache.avro.io.*;
 import org.apache.avro.reflect.ReflectDatumWriter;
-import org.apache.avro.specific.SpecificData;
 import org.apache.avro.specific.SpecificDatumReader;
 import org.apache.avro.specific.SpecificRecord;
 import org.apache.hadoop.conf.Configured;
@@ -44,17 +43,30 @@ public class AvroSpecificRecordSerialization<T> extends Configured
     return SpecificRecord.class.isAssignableFrom(c);
   }
 
+  private Schema getSchema(Class<T> c) {
+    if (schema == null) {
+      try {
+        schema = ((SpecificRecord) c.newInstance()).getSchema();
+      } catch (InstantiationException e) {
+        throw new RuntimeException("Unable to infer a schema from " + c);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException("Unable to infer a schema from " + c);
+      }
+    }
+    return schema;
+  }
+
   /**
    * Returns the specified map output deserializer.  Defaults to the final
    * output deserializer if no map output schema was specified.
    */
   public Deserializer<T> getDeserializer(Class<T> c) {
-    Schema schema = SpecificData.get().getSchema(c);
-    DatumReader<T> datumReader = new SpecificDatumReader<T>(schema);
+    DatumReader<T> datumReader = new SpecificDatumReader<T>(getSchema(c));
     return new AvroSpecificRecordDeserializer(datumReader);
   }
 
   private static final DecoderFactory FACTORY = DecoderFactory.get();
+  private Schema schema = null;
 
   private class AvroSpecificRecordDeserializer
       implements Deserializer<T> {
@@ -84,12 +96,12 @@ public class AvroSpecificRecordSerialization<T> extends Configured
 
   }
 
+
   /**
    * Returns the specified output serializer.
    */
   public Serializer<T> getSerializer(Class<T> c) {
-    Schema schema = SpecificData.get().getSchema(c);
-    return new AvroSpecificRecordSerializer(new ReflectDatumWriter<T>(schema));
+    return new AvroSpecificRecordSerializer(new ReflectDatumWriter<T>(getSchema(c)));
   }
 
   private class AvroSpecificRecordSerializer implements Serializer<T> {
