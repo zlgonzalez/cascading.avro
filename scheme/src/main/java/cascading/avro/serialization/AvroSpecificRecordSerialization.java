@@ -31,6 +31,8 @@ import org.apache.hadoop.io.serializer.Serializer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 
 /**
@@ -44,9 +46,11 @@ public class AvroSpecificRecordSerialization<T> extends Configured
   }
 
   private Schema getSchema(Class<T> c) {
+    Schema schema = SCHEMA_CACHE.get(c);
     if (schema == null) {
       try {
         schema = ((SpecificRecord) c.newInstance()).getSchema();
+        SCHEMA_CACHE.put(c, schema);
       } catch (InstantiationException e) {
         throw new RuntimeException("Unable to infer a schema from " + c);
       } catch (IllegalAccessException e) {
@@ -66,7 +70,7 @@ public class AvroSpecificRecordSerialization<T> extends Configured
   }
 
   private static final DecoderFactory FACTORY = DecoderFactory.get();
-  private Schema schema = null;
+  private Map<Class<?>, Schema> SCHEMA_CACHE = new WeakHashMap<Class<?>, Schema>();
 
   private class AvroSpecificRecordDeserializer
       implements Deserializer<T> {
