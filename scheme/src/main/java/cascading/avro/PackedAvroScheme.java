@@ -8,7 +8,6 @@ import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 import org.apache.avro.Schema;
-import org.apache.avro.generic.GenericContainer;
 import org.apache.avro.mapred.AvroWrapper;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
@@ -18,7 +17,7 @@ import org.apache.hadoop.mapred.RecordReader;
 
 import java.io.IOException;
 
-public class PackedAvroScheme<T extends GenericContainer> extends AvroScheme {
+public class PackedAvroScheme<T> extends AvroScheme {
   /**
    * This scheme should be used when you don't want cascading.avro to automatically unpack or pack your Avro objects.
    * The constructors are similar to the super class but there is only ever one field incoming or outgoing. The parameter
