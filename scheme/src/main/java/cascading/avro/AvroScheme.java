@@ -28,6 +28,7 @@ import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
 import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData.Record;
+import org.apache.avro.generic.IndexedRecord;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.mapred.*;
 import org.apache.hadoop.fs.FileStatus;
@@ -143,13 +144,13 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
       throws IOException {
     TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
 
-    Record record = new Record((Schema) sinkCall.getContext()[0]);
+    IndexedRecord record = new Record((Schema) sinkCall.getContext()[0]);
     Object[] objectArray = CascadingToAvro.parseTupleEntry(tupleEntry, (Schema) sinkCall.getContext()[0]);
     for (int i = 0; i < objectArray.length; i++) {
       record.put(i, objectArray[i]);
     }
     //noinspection unchecked
-    sinkCall.getOutput().collect(new AvroWrapper<Record>(record), NullWritable.get());
+    sinkCall.getOutput().collect(new AvroWrapper<IndexedRecord>(record), NullWritable.get());
 
   }
 
@@ -241,12 +242,12 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
       SourceCall<Object[], RecordReader> sourceCall)
       throws IOException {
 
-    @SuppressWarnings("unchecked") RecordReader<AvroWrapper<Record>, Writable> input = sourceCall.getInput();
-    AvroWrapper<Record> wrapper = input.createKey();
+    @SuppressWarnings("unchecked") RecordReader<AvroWrapper<IndexedRecord>, Writable> input = sourceCall.getInput();
+    AvroWrapper<IndexedRecord> wrapper = input.createKey();
     if (!input.next(wrapper, input.createValue())) {
       return false;
     }
-    Record record = wrapper.datum();
+    IndexedRecord record = wrapper.datum();
     Tuple tuple = sourceCall.getIncomingEntry().getTuple();
     tuple.clear();
 

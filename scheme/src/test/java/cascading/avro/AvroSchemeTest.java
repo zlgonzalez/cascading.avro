@@ -34,6 +34,7 @@ import cascading.tuple.*;
 import junit.framework.Assert;
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
+import org.apache.avro.generic.IndexedRecord;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.util.Utf8;
@@ -158,9 +159,10 @@ public class AvroSchemeTest extends Assert {
     assertTrue(iterator.hasNext());
     final TupleEntry readEntry1 = iterator.next();
 
-    assertTrue(readEntry1.getObject(0) instanceof Record);
-    assertEquals(record.get(0), (Record) ((Record) readEntry1.getObject(0)).get(0));
-    assertEquals(new Utf8((String) record.get(1)), ((Record) readEntry1.getObject(0)).get(1));
+    assertTrue(readEntry1.getObject(0) instanceof IndexedRecord);
+    assertEquals(((IndexedRecord) record.get(0)).get(0), ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(0));
+    assertEquals(new Utf8((String) ((IndexedRecord) record.get(0)).get(1)), ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(1));
+    assertEquals(new Utf8((String) record.get(1)), ((IndexedRecord) readEntry1.getObject(0)).get(1));
 
   }
 
