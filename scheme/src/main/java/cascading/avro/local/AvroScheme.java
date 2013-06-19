@@ -339,5 +339,32 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
             System.exit(1);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        AvroScheme that = (AvroScheme) o;
+
+        if (schema != null ? !schema.equals(that.schema) : that.schema != null) return false;
+
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return "AvroScheme{" +
+                "schema=" + schema +
+                '}';
+    }
+
+    @Override
+    public int hashCode() {
+
+        return 31 * getSinkFields().hashCode() +
+                schema.hashCode();
+    }
 }
 
