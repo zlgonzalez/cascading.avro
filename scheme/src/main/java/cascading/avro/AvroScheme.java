@@ -315,9 +315,24 @@ public class AvroScheme extends Scheme<JobConf, RecordReader, OutputCollector, O
             Path statusPath = status.getPath();
             if (fs.isFile(statusPath)) {
                 // no need to open them all
-                InputStream stream = new BufferedInputStream(fs.open(statusPath));
-                @SuppressWarnings("unchecked") DataFileStream reader = new DataFileStream(stream, new GenericDatumReader());
-                return reader.getSchema();
+                InputStream stream = null;
+                DataFileStream reader = null;
+                try {
+                    stream = new BufferedInputStream(fs.open(statusPath));
+                    reader = new DataFileStream(stream, new GenericDatumReader());
+                    return reader.getSchema();
+                }
+                finally {
+                    if (reader == null) {
+                        if (stream != null) {
+                            stream.close();
+                        }
+                    }
+                    else {
+                        reader.close();
+                    }
+                }
+
             }
         }
         // couldn't find any Avro files, return null schema
