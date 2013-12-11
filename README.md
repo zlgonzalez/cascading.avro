@@ -21,7 +21,7 @@ generated classes by appending the word "Fields" to the record name. The generat
 for all record fields, as well as, a field named ALL that lists all fields in the expected order.
 
 ## Acknowledgements
-This project has components of the original cascading.avro project as well as some from the cascading-avro project. 
+This project has components of the original cascading.avro project as well as some from the [cascading-avro](https://github.com/MaxPoint/cascading-avro) project. 
 
 ## License
 
