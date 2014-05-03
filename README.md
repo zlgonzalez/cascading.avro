@@ -15,10 +15,15 @@ The current version of cascading.avro is compatibile with Cascading 2.x. Please 
 
 # cascading.avro-maven-plugin
 
-An Apache Maven plugin that generates classes with field name constants based on Avro record schema. This plugin
-is similar to standard Avro schema plugin used to generate specific objects for Avro records. For The plugin names
-generated classes by appending the word "Fields" to the record name. The generated class will have constant fields
-for all record fields, as well as, a field named ALL that lists all fields in the expected order.
+An Apache Maven plugin that generates classes with field name constants based on an Avro record schema. This plugin
+is similar to the standard Avro schema plugin used to generate specific objects for Avro records. The plugin creates
+names for generated classes by appending the word "Fields" to the record name. The generated class will have constant fields
+for all record fields, as well as a field named ALL that lists all fields in the expected order.
+
+The advantage of using the plugin is that given an Avro record Foo with field bar, you can use FooFields.BAR rather than 
+the string "bar" in your Flow. Also it adds FooFields.ALL which lists all fields in the record, which is helpful as the
+last step of an assembly to ensure you're producing all fields.
+
 
 ## Acknowledgements
 This project has components of the original cascading.avro project as well as some from the [cascading-avro](https://github.com/MaxPoint/cascading-avro) project. 

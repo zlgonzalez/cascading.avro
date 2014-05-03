@@ -108,7 +108,22 @@ public class AvroSpecificRecordSerialization<T> extends Configured
     return new AvroSpecificRecordSerializer(new ReflectDatumWriter<T>(getSchema(c)));
   }
 
-  private class AvroSpecificRecordSerializer implements Serializer<T> {
+  /**
+   * AvroSpecificRecordSerialization was added primarily for Scalding interop since Kryo 
+   * has trouble with some nested Avro records. The only time you need to use it in 
+   * Cascading is if you have Avro records inside a tuple and then do an operation that 
+   * forces a reduce. In this case Hadoop doesn't know how to serialize Avro records 
+   * so this class plugs in to do that.
+   * 
+   * Add it to the list of other serialization classes in "io.serializations" property. 
+   * The order is important, especially if Kryo is configured to accept all classes. 
+   * In this case you want this serializer to come first in the list.
+   * 
+   * FWIW - this has nothing to do with Scalding. It's usable and useful for all DSLs and 
+   * straight up Cascading
+   *
+   */
+private class AvroSpecificRecordSerializer implements Serializer<T> {
 
     private DatumWriter<T> writer;
     private OutputStream out;
