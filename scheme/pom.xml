@@ -79,6 +79,7 @@
                 </executions>
                 <configuration>
                     <testSourceDirectory>${basedir}/src/test/resources/cascading/avro</testSourceDirectory>
+                    <testOutputDirectory>${basedir}/src/test/java</testOutputDirectory>
                 </configuration>
             </plugin>
         </plugins>
