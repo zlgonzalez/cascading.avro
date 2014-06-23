@@ -62,8 +62,8 @@ public class TrevniSchemeTest extends Assert {
 		Configuration hadoopConf = new Configuration();	
 		
 		// compression codec for trevni column block.
-		hadoopConf.set("trevni.meta.trevni.codec", "snappy");
-		
+		// KKr - This fails on systems without Snappy installed, so commenting it out
+		// hadoopConf.set("trevni.meta.trevni.codec", "snappy");
 		
 		Map<Object, Object> confMap = new HashMap<Object, Object>();
 		Iterator<Entry<String, String>> iter = hadoopConf.iterator();
