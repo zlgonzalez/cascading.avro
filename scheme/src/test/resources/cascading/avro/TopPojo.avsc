@@ -1,0 +1,29 @@
+{
+  "namespace": "cascading.avro.pojo",
+  "type": "record",
+  "name": "TopPojo",
+  "fields": [
+    {"name": "Id",         "type": ["null", "int"], "default": null},
+    {"name": "State",      "type": ["null", "string"], "default": null},
+    {
+      "name": "Things",
+      "type": [
+        "null",
+        {
+          "type": "array",
+          "items": {
+            "namespace": "cascading.avro.pojo",
+            "type" : "record",
+            "name" : "EmbeddedPojo",
+            "fields" : [
+              {"name": "Age",      "type": ["null", "string"], "default": null},
+              {"name": "City",     "type": ["null", "string"], "default": null},
+              {"name": "LastName", "type": ["null", "string"], "default": null}
+            ]
+          }
+        }
+      ],
+      "default": null
+    }
+  ]
+}
