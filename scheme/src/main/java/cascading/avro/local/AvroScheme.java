@@ -11,6 +11,7 @@ import cascading.tap.Tap;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
+
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileStream;
@@ -39,6 +40,8 @@ import java.util.Properties;
 public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, DataFileStream, DataFileWriter> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AvroScheme.class);
+    private static final String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
+
     private Encoder encoder;
     //    private Decoder decoder;
     protected Schema schema;
@@ -73,6 +76,31 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
     public AvroScheme() {
         this(null);
     }
+
+    /**
+     * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
+     * This is the legacy constructor format. A Fields object and the corresponding types must be provided.
+     *
+     * @param fields Fields object from cascading
+     * @param types  array of Class types
+     */
+    public AvroScheme(Fields fields, Class<?>[] types) {
+        this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types));
+    }
+
+    /**
+     * Return the schema which has been set as a string
+     *
+     * @return String representing the schema
+     */
+    String getJsonSchema() {
+        if (schema == null) {
+            return "";
+        } else {
+            return schema.toString();
+        }
+    }
+
 
     DataFileStream<IndexedRecord> createInput(InputStream inputStream) {
 //        if (decoder == null)
