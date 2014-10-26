@@ -36,7 +36,7 @@
   </scm>
 
   <properties>
-	<avro.version>1.7.6</avro.version>
+	<avro.version>1.7.7</avro.version>
   </properties>
 
   <build>
