@@ -28,7 +28,6 @@ import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Fixed;
 import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.IndexedRecord;
-import org.apache.avro.util.Utf8;
 import org.apache.hadoop.io.BytesWritable;
 
 import cascading.tuple.Tuple;
@@ -105,7 +104,8 @@ public class AvroToCascading {
     protected static Object fromAvroMap(Object obj, Schema schema) {
 
         Map<String, Object> convertedMap = new HashMap<String, Object>();
-        for (Map.Entry<Utf8, Object> e : ((Map<Utf8, Object>) obj).entrySet()) {
+        // CharSequence because the str can be configured as either Utf8 or String.
+        for (Map.Entry<CharSequence, Object> e : ((Map<CharSequence, Object>) obj).entrySet()) {
             convertedMap.put(e.getKey().toString(), fromAvro(e.getValue(), schema.getValueType()));
         }
         return convertedMap;
