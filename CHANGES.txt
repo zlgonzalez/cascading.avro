@@ -1,0 +1,22 @@
+cascading.avro Change Log
+
+Current Development 2.6-SNAPSHOT (dd/mm/yyyy)
+- Pull   37: Big change, details below (silasdavis via kkrugler)
+				Unified the notions of AvroScheme and PackedAvroScheme with a depth paramter
+				Made the conversion logic between Avro and 'Cascading' types pluggable.
+				Supported fairly arbitary union types.
+				Increased the flexibility of Avro conversion logic with respect to byte[], List, TupleEntry, Map etc.
+				Standardised by representing Avro maps and arrays as Tuples, and records as TupleEntries in Cascading land.
+				Made CascadingToAvro use a ordered MultiMap to define mappings from Java classes to Avro Schema.Type
+				Made CascadingToAvro serialize into SpecificRecords.
+				Replaced AvroSpecificRecordSerialization with a more general AvroSpecificDataSerialization that handles all auto-generated Avro Java classes.
+				
+- Issue  ??: Fix <scm> info in pom.xml files (kkrugler)
+
+- Pull   18: Serialize the schema string as an object instead of a UTF string to support large schemas (navteniev via kkrugler)
+
+- Issue  ??: Updated to Avro 1.7.7 and Hadoop 2.2 (kkrugler)
+
+Release 2.5.0 - 2014-10-22
+
+Release 2.1.2 - 2013-07-25
