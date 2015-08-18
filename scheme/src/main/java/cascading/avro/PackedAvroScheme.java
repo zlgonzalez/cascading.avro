@@ -7,8 +7,10 @@ import cascading.tap.Tap;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
+
 import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroWrapper;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.mapred.JobConf;
@@ -49,7 +51,7 @@ public class PackedAvroScheme<T> extends AvroScheme {
    * @throws java.io.IOException
    */
   @Override
-  public void sink(FlowProcess<JobConf> flowProcess, SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
+  public void sink(FlowProcess<? extends Configuration> flowProcess, SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
     TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
     //noinspection unchecked
     sinkCall.getOutput().collect(new AvroWrapper<T>((T) tupleEntry.getObject(Fields.FIRST)), NullWritable.get());
@@ -63,7 +65,7 @@ public class PackedAvroScheme<T> extends AvroScheme {
    * @throws java.io.IOException
    */
   @Override
-  public void sinkPrepare(FlowProcess<JobConf> flowProcess, SinkCall<Object[], OutputCollector> sinkCall)
+  public void sinkPrepare(FlowProcess<? extends Configuration> flowProcess, SinkCall<Object[], OutputCollector> sinkCall)
       throws IOException {
   }
 
@@ -75,7 +77,7 @@ public class PackedAvroScheme<T> extends AvroScheme {
    * @return Fields The source cascading fields.
    */
   @Override
-  public Fields retrieveSourceFields(FlowProcess<JobConf> flowProcess, Tap tap) {
+  public Fields retrieveSourceFields(FlowProcess<? extends Configuration> flowProcess, Tap tap) {
     if (schema == null) {
       setSourceFields(Fields.UNKNOWN);
     } else {
@@ -93,7 +95,7 @@ public class PackedAvroScheme<T> extends AvroScheme {
    * @throws java.io.IOException
    */
   @Override
-  public boolean source(FlowProcess<JobConf> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
+  public boolean source(FlowProcess<? extends Configuration> flowProcess, SourceCall<Object[], RecordReader> sourceCall) throws IOException {
     @SuppressWarnings("unchecked") RecordReader<AvroWrapper<T>, Writable> input = sourceCall.getInput();
     AvroWrapper<T> wrapper = input.createKey();
     if (!input.next(wrapper, input.createValue())) {

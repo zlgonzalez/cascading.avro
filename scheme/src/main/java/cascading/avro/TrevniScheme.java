@@ -5,9 +5,11 @@ import java.util.Collection;
 import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroJob;
 import org.apache.avro.mapred.AvroSerialization;
-import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.RecordReader;
+import org.apache.hadoop.mapred.InputFormat;
+import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.trevni.avro.AvroTrevniInputFormat;
 import org.apache.trevni.avro.AvroTrevniOutputFormat;
 
@@ -23,22 +25,22 @@ public class TrevniScheme extends AvroScheme {
 	}
 	
 	@Override
-	public void sourceConfInit(FlowProcess<JobConf> flowProcess,
-			Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
+	public void sourceConfInit(FlowProcess<? extends Configuration> flowProcess,
+			Tap<Configuration, RecordReader, OutputCollector> tap, Configuration conf) {
 
 		retrieveSourceFields(flowProcess, tap);
 		
 		// Set the input schema and input format class
 		conf.set(AvroJob.INPUT_SCHEMA, schema.toString());	
-		conf.setInputFormat(AvroTrevniInputFormat.class);
+		conf.setClass("mapred.input.format.class", AvroTrevniInputFormat.class, InputFormat.class);
 
 		// add AvroSerialization to io.serializations
 		addAvroSerializations(conf);	
 	}
 
 	@Override
-	public void sinkConfInit(FlowProcess<JobConf> flowProcess,
-			Tap<JobConf, RecordReader, OutputCollector> tap, JobConf conf) {
+	public void sinkConfInit(FlowProcess<? extends Configuration> flowProcess,
+			Tap<Configuration, RecordReader, OutputCollector> tap, Configuration conf) {
 
 		if (schema == null) {
 			throw new RuntimeException("Must provide sink schema");
@@ -46,7 +48,7 @@ public class TrevniScheme extends AvroScheme {
 		
 		// Set the output schema and output format class
 		conf.set(AvroJob.OUTPUT_SCHEMA, schema.toString());
-		conf.setOutputFormat(AvroTrevniOutputFormat.class);
+		conf.setClass("mapred.output.format.class", AvroTrevniOutputFormat.class, OutputFormat.class);
 
 		// add AvroSerialization to io.serializations
 		addAvroSerializations(conf);
@@ -54,7 +56,7 @@ public class TrevniScheme extends AvroScheme {
 
 	
 
-	private void addAvroSerializations(JobConf conf) {
+	private void addAvroSerializations(Configuration conf) {
 		Collection<String> serializations = conf
 				.getStringCollection("io.serializations");
 		if (!serializations.contains(AvroSerialization.class.getName())) {

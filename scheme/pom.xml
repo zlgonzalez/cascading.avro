@@ -17,7 +17,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cascading.avro</groupId>
     <artifactId>avro-scheme</artifactId>
-    <version>2.6-SNAPSHOT</version>
+    <version>3.0.0</version>
     <packaging>jar</packaging>
     <name>Cascading support for Avro</name>
     <description>
@@ -31,7 +31,7 @@
 
     <properties>
         <hadoop.version>2.2.0</hadoop.version>
-        <cascading.version>2.5.6</cascading.version>
+        <cascading.version>3.0.1</cascading.version>
         <avro.version>1.7.7</avro.version>
     </properties>
 
@@ -53,6 +53,15 @@
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-eclipse-plugin</artifactId>
+                    <version>2.9</version>
+                    <configuration>
+                        <downloadSources>true</downloadSources>
+                        <downloadJavadocs>true</downloadJavadocs>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
                     <configuration>
@@ -63,6 +72,37 @@
                             <exclude>**/cascading/avro/TestExtraLarge.java</exclude>
                         </testExcludes>
                     </configuration>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                	<groupId>org.eclipse.m2e</groupId>
+                	<artifactId>lifecycle-mapping</artifactId>
+                	<version>1.0.0</version>
+                	<configuration>
+                		<lifecycleMappingMetadata>
+                			<pluginExecutions>
+                				<pluginExecution>
+                					<pluginExecutionFilter>
+                						<groupId>
+                							org.apache.avro
+                						</groupId>
+                						<artifactId>
+                							avro-maven-plugin
+                						</artifactId>
+                						<versionRange>
+                							[1.7.7,)
+                						</versionRange>
+                						<goals>
+                							<goal>schema</goal>
+                						</goals>
+                					</pluginExecutionFilter>
+                					<action>
+                						<ignore></ignore>
+                					</action>
+                				</pluginExecution>
+                			</pluginExecutions>
+                		</lifecycleMappingMetadata>
+                	</configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
