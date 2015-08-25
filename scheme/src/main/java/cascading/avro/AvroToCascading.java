@@ -41,16 +41,17 @@ public class AvroToCascading {
         List<Field> schemaFields = readerSchema.getFields();
         for (int i = 0; i < schemaFields.size(); i++) {
             Field field = schemaFields.get(i);
-            if (writerSchema.getField(field.name()) == null) {
-                throw new AvroRuntimeException("Not a valid schema field: " + field.name());
-            }
-            Object obj = record.get(i);
-            result[i] = fromAvro(obj, field.schema());
 
+            if (writerSchema.getField(field.name()) == null) {
+         		result[i] = null;
+            } else {
+                Object obj = record.get(i);
+                result[i] = fromAvro(obj, field.schema());
+            }
         }
         return result;
     }
-
+    
     protected static Object fromAvro(Object obj, Schema schema) {
     	if (obj == null) {
     		return null;
@@ -99,7 +100,7 @@ public class AvroToCascading {
         Fixed fixed = (Fixed) obj;
         return new BytesWritable(fixed.bytes());
     }
-
+    
     @SuppressWarnings("unchecked")
     protected static Object fromAvroMap(Object obj, Schema schema) {
 
@@ -116,7 +117,8 @@ public class AvroToCascading {
         return result;
     }
 
-    protected static Object fromAvroArray(Object obj, Schema schema) {
+    @SuppressWarnings("rawtypes")
+	protected static Object fromAvroArray(Object obj, Schema schema) {
         List<Object> array = new ArrayList<Object>();
         for (Object element : (GenericData.Array) obj) {
             array.add(fromAvro(element, schema.getElementType()));

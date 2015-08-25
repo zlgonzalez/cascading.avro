@@ -11,6 +11,7 @@ import cascading.tap.Tap;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
+
 import org.apache.avro.Schema;
 import org.apache.avro.file.DataFileReader;
 import org.apache.avro.file.DataFileStream;
@@ -241,7 +242,8 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
      * @param sourceCall  of SourceCall
      * @return returns {@code true} when a Tuple was successfully read
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public boolean source(FlowProcess<? extends Properties> flowProcess, SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
 
         if (sourceCall.getContext().hasNext()) {
@@ -366,6 +368,5 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
         return 31 * getSinkFields().hashCode() +
                 schema.hashCode();
     }
-
 }
 

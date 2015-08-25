@@ -172,7 +172,8 @@ public class AvroToCascadingTest {
         assertThat((Integer) output[10], is(5));
     }
 
-    @Test
+    @SuppressWarnings("unchecked")
+	@Test
     public void testNullFieldValue() {
     	String schemaStr = "{" +  	
     			"\"type\":\"record\", " + 

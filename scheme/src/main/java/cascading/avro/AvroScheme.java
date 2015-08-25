@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -57,6 +58,7 @@ import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 
 
+@SuppressWarnings("rawtypes")
 public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollector, Object[], Object[]> {
 
     private static final String DEFAULT_RECORD_NAME = "CascadingAvroRecord";
@@ -191,7 +193,8 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
      * @param tap         The cascading Tap object.
      * @return Schema The schema of the peeked at data, or Schema.NULL if none exists.
      */
-    private Schema getSourceSchema(FlowProcess<? extends Configuration> flowProcess, Tap tap) throws IOException {
+    @SuppressWarnings({ "deprecation", "unchecked" })
+	private Schema getSourceSchema(FlowProcess<? extends Configuration> flowProcess, Tap tap) throws IOException {
 
         if (tap instanceof CompositeTap) {
             tap = (Tap) ((CompositeTap) tap).getChildTaps().next();
@@ -292,6 +295,7 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
      * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
      * @throws IOException
      */
+	@SuppressWarnings({ "unchecked" })
 	@Override
 	public void sink(FlowProcess<? extends Configuration> flowProcess,
 			SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
@@ -331,7 +335,7 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         conf.setBoolean("mapred.mapper.new-api", false);
 
 
-        // add AvroSerialization to io.serializations
+        // Add AvroSerialization to io.serializations
         addAvroSerializations(conf);
 	}
 
@@ -382,9 +386,10 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         conf.setClass("mapred.input.format.class", AvroInputFormat.class, InputFormat.class);
         conf.setBoolean("mapred.mapper.new-api", false);
 
-        // add AvroSerialization to io.serializations
+        // Add AvroSerialization to io.serializations
         addAvroSerializations(conf);
 	}
+	
 }
 
 
