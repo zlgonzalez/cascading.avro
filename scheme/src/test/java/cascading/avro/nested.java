@@ -3,183 +3,213 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package cascading.avro;  
+package cascading.avro;
+
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class nested extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"nested\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}");
-  public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
-  @Deprecated public int anInnerField1;
-  @Deprecated public java.lang.CharSequence anInnerField2;
+public class nested extends org.apache.avro.specific.SpecificRecordBase implements
+        org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
+            .parse("{\"type\":\"record\",\"name\":\"nested\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}");
 
-  /**
-   * Default constructor.
-   */
-  public nested() {}
-
-  /**
-   * All-args constructor.
-   */
-  public nested(java.lang.Integer anInnerField1, java.lang.CharSequence anInnerField2) {
-    this.anInnerField1 = anInnerField1;
-    this.anInnerField2 = anInnerField2;
-  }
-
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
-  // Used by DatumWriter.  Applications should not call. 
-  public java.lang.Object get(int field$) {
-    switch (field$) {
-    case 0: return anInnerField1;
-    case 1: return anInnerField2;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-  // Used by DatumReader.  Applications should not call. 
-  @SuppressWarnings(value="unchecked")
-  public void put(int field$, java.lang.Object value$) {
-    switch (field$) {
-    case 0: anInnerField1 = (java.lang.Integer)value$; break;
-    case 1: anInnerField2 = (java.lang.CharSequence)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-
-  /**
-   * Gets the value of the 'anInnerField1' field.
-   */
-  public java.lang.Integer getAnInnerField1() {
-    return anInnerField1;
-  }
-
-  /**
-   * Sets the value of the 'anInnerField1' field.
-   * @param value the value to set.
-   */
-  public void setAnInnerField1(java.lang.Integer value) {
-    this.anInnerField1 = value;
-  }
-
-  /**
-   * Gets the value of the 'anInnerField2' field.
-   */
-  public java.lang.CharSequence getAnInnerField2() {
-    return anInnerField2;
-  }
-
-  /**
-   * Sets the value of the 'anInnerField2' field.
-   * @param value the value to set.
-   */
-  public void setAnInnerField2(java.lang.CharSequence value) {
-    this.anInnerField2 = value;
-  }
-
-  /** Creates a new nested RecordBuilder */
-  public static cascading.avro.nested.Builder newBuilder() {
-    return new cascading.avro.nested.Builder();
-  }
-  
-  /** Creates a new nested RecordBuilder by copying an existing Builder */
-  public static cascading.avro.nested.Builder newBuilder(cascading.avro.nested.Builder other) {
-    return new cascading.avro.nested.Builder(other);
-  }
-  
-  /** Creates a new nested RecordBuilder by copying an existing nested instance */
-  public static cascading.avro.nested.Builder newBuilder(cascading.avro.nested other) {
-    return new cascading.avro.nested.Builder(other);
-  }
-  
-  /**
-   * RecordBuilder for nested instances.
-   */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<nested>
-    implements org.apache.avro.data.RecordBuilder<nested> {
-
-    private int anInnerField1;
-    private java.lang.CharSequence anInnerField2;
-
-    /** Creates a new Builder */
-    private Builder() {
-      super(cascading.avro.nested.SCHEMA$);
-    }
-    
-    /** Creates a Builder by copying an existing Builder */
-    private Builder(cascading.avro.nested.Builder other) {
-      super(other);
-    }
-    
-    /** Creates a Builder by copying an existing nested instance */
-    private Builder(cascading.avro.nested other) {
-            super(cascading.avro.nested.SCHEMA$);
-      if (isValidValue(fields()[0], other.anInnerField1)) {
-        this.anInnerField1 = data().deepCopy(fields()[0].schema(), other.anInnerField1);
-        fieldSetFlags()[0] = true;
-      }
-      if (isValidValue(fields()[1], other.anInnerField2)) {
-        this.anInnerField2 = data().deepCopy(fields()[1].schema(), other.anInnerField2);
-        fieldSetFlags()[1] = true;
-      }
+    public static org.apache.avro.Schema getClassSchema() {
+        return SCHEMA$;
     }
 
-    /** Gets the value of the 'anInnerField1' field */
+    @Deprecated
+    public int anInnerField1;
+    @Deprecated
+    public java.lang.CharSequence anInnerField2;
+
+    /**
+     * Default constructor.
+     */
+    public nested() {
+    }
+
+    /**
+     * All-args constructor.
+     */
+    public nested(java.lang.Integer anInnerField1, java.lang.CharSequence anInnerField2) {
+        this.anInnerField1 = anInnerField1;
+        this.anInnerField2 = anInnerField2;
+    }
+
+    public org.apache.avro.Schema getSchema() {
+        return SCHEMA$;
+    }
+
+    // Used by DatumWriter. Applications should not call.
+    public java.lang.Object get(int field$) {
+        switch (field$) {
+        case 0:
+            return anInnerField1;
+        case 1:
+            return anInnerField2;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    // Used by DatumReader. Applications should not call.
+    @SuppressWarnings(value = "unchecked")
+    public void put(int field$, java.lang.Object value$) {
+        switch (field$) {
+        case 0:
+            anInnerField1 = (java.lang.Integer) value$;
+            break;
+        case 1:
+            anInnerField2 = (java.lang.CharSequence) value$;
+            break;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    /**
+     * Gets the value of the 'anInnerField1' field.
+     */
     public java.lang.Integer getAnInnerField1() {
-      return anInnerField1;
-    }
-    
-    /** Sets the value of the 'anInnerField1' field */
-    public cascading.avro.nested.Builder setAnInnerField1(int value) {
-      validate(fields()[0], value);
-      this.anInnerField1 = value;
-      fieldSetFlags()[0] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'anInnerField1' field has been set */
-    public boolean hasAnInnerField1() {
-      return fieldSetFlags()[0];
-    }
-    
-    /** Clears the value of the 'anInnerField1' field */
-    public cascading.avro.nested.Builder clearAnInnerField1() {
-      fieldSetFlags()[0] = false;
-      return this;
+        return anInnerField1;
     }
 
-    /** Gets the value of the 'anInnerField2' field */
+    /**
+     * Sets the value of the 'anInnerField1' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setAnInnerField1(java.lang.Integer value) {
+        this.anInnerField1 = value;
+    }
+
+    /**
+     * Gets the value of the 'anInnerField2' field.
+     */
     public java.lang.CharSequence getAnInnerField2() {
-      return anInnerField2;
-    }
-    
-    /** Sets the value of the 'anInnerField2' field */
-    public cascading.avro.nested.Builder setAnInnerField2(java.lang.CharSequence value) {
-      validate(fields()[1], value);
-      this.anInnerField2 = value;
-      fieldSetFlags()[1] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'anInnerField2' field has been set */
-    public boolean hasAnInnerField2() {
-      return fieldSetFlags()[1];
-    }
-    
-    /** Clears the value of the 'anInnerField2' field */
-    public cascading.avro.nested.Builder clearAnInnerField2() {
-      anInnerField2 = null;
-      fieldSetFlags()[1] = false;
-      return this;
+        return anInnerField2;
     }
 
-    @Override
-    public nested build() {
-      try {
-        nested record = new nested();
-        record.anInnerField1 = fieldSetFlags()[0] ? this.anInnerField1 : (java.lang.Integer) defaultValue(fields()[0]);
-        record.anInnerField2 = fieldSetFlags()[1] ? this.anInnerField2 : (java.lang.CharSequence) defaultValue(fields()[1]);
-        return record;
-      } catch (Exception e) {
-        throw new org.apache.avro.AvroRuntimeException(e);
-      }
+    /**
+     * Sets the value of the 'anInnerField2' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setAnInnerField2(java.lang.CharSequence value) {
+        this.anInnerField2 = value;
     }
-  }
+
+    /** Creates a new nested RecordBuilder */
+    public static cascading.avro.nested.Builder newBuilder() {
+        return new cascading.avro.nested.Builder();
+    }
+
+    /** Creates a new nested RecordBuilder by copying an existing Builder */
+    public static cascading.avro.nested.Builder newBuilder(cascading.avro.nested.Builder other) {
+        return new cascading.avro.nested.Builder(other);
+    }
+
+    /**
+     * Creates a new nested RecordBuilder by copying an existing nested instance
+     */
+    public static cascading.avro.nested.Builder newBuilder(cascading.avro.nested other) {
+        return new cascading.avro.nested.Builder(other);
+    }
+
+    /**
+     * RecordBuilder for nested instances.
+     */
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<nested> implements
+            org.apache.avro.data.RecordBuilder<nested> {
+
+        private int anInnerField1;
+        private java.lang.CharSequence anInnerField2;
+
+        /** Creates a new Builder */
+        private Builder() {
+            super(cascading.avro.nested.SCHEMA$);
+        }
+
+        /** Creates a Builder by copying an existing Builder */
+        private Builder(cascading.avro.nested.Builder other) {
+            super(other);
+        }
+
+        /** Creates a Builder by copying an existing nested instance */
+        private Builder(cascading.avro.nested other) {
+            super(cascading.avro.nested.SCHEMA$);
+            if (isValidValue(fields()[0], other.anInnerField1)) {
+                this.anInnerField1 = data().deepCopy(fields()[0].schema(), other.anInnerField1);
+                fieldSetFlags()[0] = true;
+            }
+            if (isValidValue(fields()[1], other.anInnerField2)) {
+                this.anInnerField2 = data().deepCopy(fields()[1].schema(), other.anInnerField2);
+                fieldSetFlags()[1] = true;
+            }
+        }
+
+        /** Gets the value of the 'anInnerField1' field */
+        public java.lang.Integer getAnInnerField1() {
+            return anInnerField1;
+        }
+
+        /** Sets the value of the 'anInnerField1' field */
+        public cascading.avro.nested.Builder setAnInnerField1(int value) {
+            validate(fields()[0], value);
+            this.anInnerField1 = value;
+            fieldSetFlags()[0] = true;
+            return this;
+        }
+
+        /** Checks whether the 'anInnerField1' field has been set */
+        public boolean hasAnInnerField1() {
+            return fieldSetFlags()[0];
+        }
+
+        /** Clears the value of the 'anInnerField1' field */
+        public cascading.avro.nested.Builder clearAnInnerField1() {
+            fieldSetFlags()[0] = false;
+            return this;
+        }
+
+        /** Gets the value of the 'anInnerField2' field */
+        public java.lang.CharSequence getAnInnerField2() {
+            return anInnerField2;
+        }
+
+        /** Sets the value of the 'anInnerField2' field */
+        public cascading.avro.nested.Builder setAnInnerField2(java.lang.CharSequence value) {
+            validate(fields()[1], value);
+            this.anInnerField2 = value;
+            fieldSetFlags()[1] = true;
+            return this;
+        }
+
+        /** Checks whether the 'anInnerField2' field has been set */
+        public boolean hasAnInnerField2() {
+            return fieldSetFlags()[1];
+        }
+
+        /** Clears the value of the 'anInnerField2' field */
+        public cascading.avro.nested.Builder clearAnInnerField2() {
+            anInnerField2 = null;
+            fieldSetFlags()[1] = false;
+            return this;
+        }
+
+        @Override
+        public nested build() {
+            try {
+                nested record = new nested();
+                record.anInnerField1 = fieldSetFlags()[0] ? this.anInnerField1
+                        : (java.lang.Integer) defaultValue(fields()[0]);
+                record.anInnerField2 = fieldSetFlags()[1] ? this.anInnerField2
+                        : (java.lang.CharSequence) defaultValue(fields()[1]);
+                return record;
+            } catch (Exception e) {
+                throw new org.apache.avro.AvroRuntimeException(e);
+            }
+        }
+    }
 }

@@ -26,7 +26,6 @@ import org.apache.avro.Schema.Field;
 import org.apache.avro.Schema.Type;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericData.Fixed;
-import org.apache.avro.generic.GenericData.Record;
 import org.apache.avro.generic.IndexedRecord;
 import org.apache.hadoop.io.BytesWritable;
 
@@ -43,7 +42,7 @@ public class AvroToCascading {
             Field field = schemaFields.get(i);
 
             if (writerSchema.getField(field.name()) == null) {
-         		result[i] = null;
+                result[i] = null;
             } else {
                 Object obj = record.get(i);
                 result[i] = fromAvro(obj, field.schema());
@@ -51,47 +50,47 @@ public class AvroToCascading {
         }
         return result;
     }
-    
+
     protected static Object fromAvro(Object obj, Schema schema) {
-    	if (obj == null) {
-    		return null;
-    	}
+        if (obj == null) {
+            return null;
+        }
         switch (schema.getType()) {
 
-            case UNION:
-                return fromAvroUnion(obj, schema);
+        case UNION:
+            return fromAvroUnion(obj, schema);
 
-            case ARRAY:
-                return fromAvroArray(obj, schema);
+        case ARRAY:
+            return fromAvroArray(obj, schema);
 
-            case STRING:
-            case ENUM:
-                return obj.toString();
+        case STRING:
+        case ENUM:
+            return obj.toString();
 
-            case FIXED:
-                return fromAvroFixed(obj, schema);
-            case BYTES:
-                return fromAvroBytes((ByteBuffer) obj);
+        case FIXED:
+            return fromAvroFixed(obj, schema);
+        case BYTES:
+            return fromAvroBytes((ByteBuffer) obj);
 
-            case RECORD:
-                Object[] objs = parseRecord((IndexedRecord) obj, schema);
-                Tuple result = new Tuple();
-                result.addAll(objs);
-                return result;
+        case RECORD:
+            Object[] objs = parseRecord((IndexedRecord) obj, schema);
+            Tuple result = new Tuple();
+            result.addAll(objs);
+            return result;
 
-            case MAP:
-                return fromAvroMap(obj, schema);
+        case MAP:
+            return fromAvroMap(obj, schema);
 
-            case NULL:
-            case BOOLEAN:
-            case DOUBLE:
-            case FLOAT:
-            case INT:
-            case LONG:
-                return obj;
+        case NULL:
+        case BOOLEAN:
+        case DOUBLE:
+        case FLOAT:
+        case INT:
+        case LONG:
+            return obj;
 
-            default:
-                throw new RuntimeException("Can't convert from type " + schema.getType().toString());
+        default:
+            throw new RuntimeException("Can't convert from type " + schema.getType().toString());
 
         }
     }
@@ -100,12 +99,13 @@ public class AvroToCascading {
         Fixed fixed = (Fixed) obj;
         return new BytesWritable(fixed.bytes());
     }
-    
+
     @SuppressWarnings("unchecked")
     protected static Object fromAvroMap(Object obj, Schema schema) {
 
         Map<String, Object> convertedMap = new HashMap<String, Object>();
-        // CharSequence because the str can be configured as either Utf8 or String.
+        // CharSequence because the str can be configured as either Utf8 or
+        // String.
         for (Map.Entry<CharSequence, Object> e : ((Map<CharSequence, Object>) obj).entrySet()) {
             convertedMap.put(e.getKey().toString(), fromAvro(e.getValue(), schema.getValueType()));
         }
@@ -118,7 +118,7 @@ public class AvroToCascading {
     }
 
     @SuppressWarnings("rawtypes")
-	protected static Object fromAvroArray(Object obj, Schema schema) {
+    protected static Object fromAvroArray(Object obj, Schema schema) {
         List<Object> array = new ArrayList<Object>();
         for (Object element : (GenericData.Array) obj) {
             array.add(fromAvro(element, schema.getElementType()));

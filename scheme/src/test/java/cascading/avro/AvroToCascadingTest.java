@@ -173,15 +173,12 @@ public class AvroToCascadingTest {
     }
 
     @SuppressWarnings("unchecked")
-	@Test
+    @Test
     public void testNullFieldValue() {
-    	String schemaStr = "{" +  	
-    			"\"type\":\"record\", " + 
-    		    "\"name\": \"nulltest\"," +
-    			"\"fields\":[" +
-    			"	{\"name\":\"afield\", \"type\":\"string\"}," +
-    	        "   {\"name\":\"aMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}}," +
-    	        "   {\"name\":\"bMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}}]}";
+        String schemaStr = "{" + "\"type\":\"record\", " + "\"name\": \"nulltest\"," + "\"fields\":["
+                + "	{\"name\":\"afield\", \"type\":\"string\"},"
+                + "   {\"name\":\"aMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}},"
+                + "   {\"name\":\"bMap\", \"type\":{\"type\":\"map\", \"values\":\"string\"}}]}";
 
         Schema schema = new Schema.Parser().parse(schemaStr);
         Record rec = new Record(schema);
@@ -205,6 +202,5 @@ public class AvroToCascadingTest {
         assertThat(output[2], nullValue());
 
     }
-
 
 }

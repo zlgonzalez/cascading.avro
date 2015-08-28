@@ -41,14 +41,16 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
 
     private static final Logger LOG = LoggerFactory.getLogger(AvroScheme.class);
     private Encoder encoder;
-    //    private Decoder decoder;
+    // private Decoder decoder;
     protected Schema schema;
     private GenericDatumReader<IndexedRecord> datumReader;
     private GenericDatumWriter<IndexedRecord> datumWriter;
 
     /**
-     * Constructor that takes an Avro Schema. It will create the incoming and outgoing fields from the Schema if it isn't
-     * null. If it is null assume the sink is Fields.ALL and the source is Fields.UNKNOWN. These will be set later.
+     * Constructor that takes an Avro Schema. It will create the incoming and
+     * outgoing fields from the Schema if it isn't null. If it is null assume
+     * the sink is Fields.ALL and the source is Fields.UNKNOWN. These will be
+     * set later.
      *
      * @param schema
      */
@@ -60,8 +62,7 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
         } else {
             Fields cascadingFields = new Fields();
             for (Schema.Field avroField : schema.getFields()) {
-                cascadingFields = cascadingFields.append(
-                        new Fields(avroField.name()));
+                cascadingFields = cascadingFields.append(new Fields(avroField.name()));
             }
             setSinkFields(cascadingFields);
             setSourceFields(cascadingFields);
@@ -76,8 +77,8 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
     }
 
     DataFileStream<IndexedRecord> createInput(InputStream inputStream) {
-//        if (decoder == null)
-//            decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
+        // if (decoder == null)
+        // decoder = DecoderFactory.get().binaryDecoder(inputStream, null);
         if (datumReader == null)
             datumReader = new GenericDatumReader<IndexedRecord>(schema);
         try {
@@ -107,17 +108,19 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
             e.printStackTrace();
             System.exit(1);
         }
-        //should never get here
+        // should never get here
         return null;
     }
 
     /**
-     * Method retrieveSourceFields will build a new Cascading Fields object out of the Avro Schema if it exists. If
-     * the Avro Scheme does not exist it will go and peek at the file to be read and use that Schema.
+     * Method retrieveSourceFields will build a new Cascading Fields object out
+     * of the Avro Schema if it exists. If the Avro Scheme does not exist it
+     * will go and peek at the file to be read and use that Schema.
      *
      * @param process
      * @param tap
-     * @return Fields a cascading fields object with one field per Avro record field
+     * @return Fields a cascading fields object with one field per Avro record
+     *         field
      */
     @Override
     public Fields retrieveSourceFields(FlowProcess<? extends Properties> process, Tap tap) {
@@ -131,7 +134,8 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
             List<File> secondaryFiles = new ArrayList<File>();
             if (f.isFile()) {
                 try {
-                    @SuppressWarnings("unchecked") DataFileReader reader = new DataFileReader(f, new GenericDatumReader());
+                    @SuppressWarnings("unchecked")
+                    DataFileReader reader = new DataFileReader(f, new GenericDatumReader());
                     schema = reader.getSchema();
                 } catch (IOException e) {
                     LOG.info("Couldn't open " + f.toString(), e);
@@ -141,19 +145,22 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
                 for (File file : f.listFiles()) {
                     if (file.isFile()) {
                         try {
-                            @SuppressWarnings("unchecked") DataFileReader reader = new DataFileReader(file, new GenericDatumReader());
+                            @SuppressWarnings("unchecked")
+                            DataFileReader reader = new DataFileReader(file, new GenericDatumReader());
                             schema = reader.getSchema();
                             break;
                         } catch (IOException e) {
                             LOG.info("Couldn't open " + file.toString(), e);
                         }
-                    } else if (file.isDirectory()) secondaryFiles.addAll(Arrays.asList(file.listFiles()));
+                    } else if (file.isDirectory())
+                        secondaryFiles.addAll(Arrays.asList(file.listFiles()));
                 }
             if (schema == null) {
                 for (File file : secondaryFiles) {
                     if (file.isFile()) {
                         try {
-                            @SuppressWarnings("unchecked") DataFileReader reader = new DataFileReader(file, new GenericDatumReader());
+                            @SuppressWarnings("unchecked")
+                            DataFileReader reader = new DataFileReader(file, new GenericDatumReader());
                             schema = reader.getSchema();
                             break;
                         } catch (IOException e) {
@@ -208,43 +215,53 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
      * @param conf
      */
     @Override
-    public void sourceConfInit(FlowProcess<? extends Properties> flowProcess, Tap<Properties, InputStream, OutputStream> tap, Properties conf) {
+    public void sourceConfInit(FlowProcess<? extends Properties> flowProcess,
+            Tap<Properties, InputStream, OutputStream> tap, Properties conf) {
     }
 
     /**
-     * Method sourcePrepare will open up a DataFileStream via the {@link AvroScheme#createInput(java.io.InputStream)} method.
+     * Method sourcePrepare will open up a DataFileStream via the
+     * {@link AvroScheme#createInput(java.io.InputStream)} method.
      *
      * @param flowProcess
      * @param sourceCall
      * @throws IOException
      */
     @Override
-    public void sourcePrepare(FlowProcess<? extends Properties> flowProcess, SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
+    public void sourcePrepare(FlowProcess<? extends Properties> flowProcess,
+            SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
         sourceCall.setContext(createInput(sourceCall.getInput()));
     }
 
-
     /**
-     * Method source will read a new "record" or value from {@link cascading.scheme.SourceCall#getInput()} and populate
-     * the available {@link cascading.tuple.Tuple} via {@link cascading.scheme.SourceCall#getIncomingEntry()} and return {@code true}
-     * on success or {@code false} if no more values available.
+     * Method source will read a new "record" or value from
+     * {@link cascading.scheme.SourceCall#getInput()} and populate the available
+     * {@link cascading.tuple.Tuple} via
+     * {@link cascading.scheme.SourceCall#getIncomingEntry()} and return
+     * {@code true} on success or {@code false} if no more values available.
      * <p/>
-     * It's ok to set a new Tuple instance on the {@code incomingEntry} {@link cascading.tuple.TupleEntry}, or
-     * to simply re-use the existing instance.
+     * It's ok to set a new Tuple instance on the {@code incomingEntry}
+     * {@link cascading.tuple.TupleEntry}, or to simply re-use the existing
+     * instance.
      * <p/>
-     * Note this is only time it is safe to modify a Tuple instance handed over via a method call.
+     * Note this is only time it is safe to modify a Tuple instance handed over
+     * via a method call.
      * <p/>
-     * This method may optionally throw a {@link cascading.tap.TapException} if it cannot process a particular
-     * instance of data. If the payload Tuple is set on the TapException, that Tuple will be written to
-     * any applicable failure trap Tap.
+     * This method may optionally throw a {@link cascading.tap.TapException} if
+     * it cannot process a particular instance of data. If the payload Tuple is
+     * set on the TapException, that Tuple will be written to any applicable
+     * failure trap Tap.
      *
-     * @param flowProcess of type FlowProcess
-     * @param sourceCall  of SourceCall
+     * @param flowProcess
+     *            of type FlowProcess
+     * @param sourceCall
+     *            of SourceCall
      * @return returns {@code true} when a Tuple was successfully read
      */
     @SuppressWarnings("rawtypes")
-	@Override
-    public boolean source(FlowProcess<? extends Properties> flowProcess, SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
+    @Override
+    public boolean source(FlowProcess<? extends Properties> flowProcess,
+            SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
 
         if (sourceCall.getContext().hasNext()) {
             IndexedRecord record = (IndexedRecord) sourceCall.getContext().next();
@@ -265,7 +282,8 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
      * @throws IOException
      */
     @Override
-    public void sourceCleanup(FlowProcess<? extends Properties> flowProcess, SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
+    public void sourceCleanup(FlowProcess<? extends Properties> flowProcess,
+            SourceCall<DataFileStream, InputStream> sourceCall) throws IOException {
         sourceCall.getContext().close();
     }
 
@@ -277,9 +295,9 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
      * @param conf
      */
     @Override
-    public void sinkConfInit(FlowProcess<? extends Properties> flowProcess, Tap<Properties, InputStream, OutputStream> tap, Properties conf) {
+    public void sinkConfInit(FlowProcess<? extends Properties> flowProcess,
+            Tap<Properties, InputStream, OutputStream> tap, Properties conf) {
     }
-
 
     /**
      * Method sinkPrepare will open up the DataFileWriter.
@@ -288,28 +306,33 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
      * @param sinkCall
      */
     @Override
-    public void sinkPrepare(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall) {
+    public void sinkPrepare(FlowProcess<? extends Properties> flowProcess,
+            SinkCall<DataFileWriter, OutputStream> sinkCall) {
         if (schema == null)
             throw new RuntimeException("Cannot have a null schema for the sink (yet).");
 
         sinkCall.setContext(createOutput(sinkCall.getOutput()));
 
-
     }
 
     /**
-     * Method sink writes out the given {@link cascading.tuple.Tuple} found on {@link cascading.scheme.SinkCall#getOutgoingEntry()} to
-     * the {@link cascading.scheme.SinkCall#getOutput()}.
+     * Method sink writes out the given {@link cascading.tuple.Tuple} found on
+     * {@link cascading.scheme.SinkCall#getOutgoingEntry()} to the
+     * {@link cascading.scheme.SinkCall#getOutput()}.
      * <p/>
-     * This method may optionally throw a {@link cascading.tap.TapException} if it cannot process a particular
-     * instance of data. If the payload Tuple is set on the TapException, that Tuple will be written to
-     * any applicable failure trap Tap. If not set, the incoming Tuple will be written instead.
+     * This method may optionally throw a {@link cascading.tap.TapException} if
+     * it cannot process a particular instance of data. If the payload Tuple is
+     * set on the TapException, that Tuple will be written to any applicable
+     * failure trap Tap. If not set, the incoming Tuple will be written instead.
      *
-     * @param flowProcess of Process
-     * @param sinkCall    of SinkCall
+     * @param flowProcess
+     *            of Process
+     * @param sinkCall
+     *            of SinkCall
      */
     @Override
-    public void sink(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall) throws IOException {
+    public void sink(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall)
+            throws IOException {
         TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
 
         IndexedRecord record = new GenericData.Record(schema);
@@ -320,18 +343,19 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
 
         sinkCall.getContext().append(record);
 
-
     }
 
     /**
-     * Method sinkCleanup will flush the DataFileWriter and close the file. It will result in a runtime exception if this
-     * either flush or close throw an exception.
+     * Method sinkCleanup will flush the DataFileWriter and close the file. It
+     * will result in a runtime exception if this either flush or close throw an
+     * exception.
      *
      * @param flowProcess
      * @param sinkCall
      */
     @Override
-    public void sinkCleanup(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall) {
+    public void sinkCleanup(FlowProcess<? extends Properties> flowProcess,
+            SinkCall<DataFileWriter, OutputStream> sinkCall) {
         try {
             sinkCall.getContext().flush();
             sinkCall.getContext().close();
@@ -344,29 +368,29 @@ public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, Da
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
 
         AvroScheme that = (AvroScheme) o;
 
-        if (schema != null ? !schema.equals(that.schema) : that.schema != null) return false;
+        if (schema != null ? !schema.equals(that.schema) : that.schema != null)
+            return false;
 
         return true;
     }
 
     @Override
     public String toString() {
-        return "AvroScheme{" +
-                "schema=" + schema +
-                '}';
+        return "AvroScheme{" + "schema=" + schema + '}';
     }
 
     @Override
     public int hashCode() {
 
-        return 31 * getSinkFields().hashCode() +
-                schema.hashCode();
+        return 31 * getSinkFields().hashCode() + schema.hashCode();
     }
 }
-

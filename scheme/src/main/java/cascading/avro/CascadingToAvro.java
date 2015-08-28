@@ -79,57 +79,57 @@ public class CascadingToAvro {
             Object obj = tuple.getObject(i);
             result[i] = toAvro(obj, field.schema());
         }
-        
+
         return result;
     }
 
     protected static Object toAvro(Object obj, Schema schema) {
         switch (schema.getType()) {
 
-            case ARRAY:
-                return toAvroArray(obj, schema);
+        case ARRAY:
+            return toAvroArray(obj, schema);
 
-            case STRING:
-                return obj.toString();
-            case ENUM:
-                return toAvroEnum(obj, schema);
+        case STRING:
+            return obj.toString();
+        case ENUM:
+            return toAvroEnum(obj, schema);
 
-            case FIXED:
-                return toAvroFixed(obj, schema);
-            case BYTES:
-                return toAvroBytes(obj);
+        case FIXED:
+            return toAvroFixed(obj, schema);
+        case BYTES:
+            return toAvroBytes(obj);
 
-            case RECORD:
-                Object[] objs;
-                if (obj instanceof Tuple) {
-                    objs = parseTuple((Tuple) obj, schema);
-                } else {
-                    objs = parseTupleEntry((TupleEntry) obj, schema);
-                }
+        case RECORD:
+            Object[] objs;
+            if (obj instanceof Tuple) {
+                objs = parseTuple((Tuple) obj, schema);
+            } else {
+                objs = parseTupleEntry((TupleEntry) obj, schema);
+            }
 
-                Record record = new Record(schema);
-                for (int i = 0; i < objs.length; i++) {
-                    record.put(i, objs[i]);
-                }
-                
-                return record;
+            Record record = new Record(schema);
+            for (int i = 0; i < objs.length; i++) {
+                record.put(i, objs[i]);
+            }
 
-            case MAP:
-                return toAvroMap(obj, schema);
+            return record;
 
-            case UNION:
-                return toAvroUnion(obj, schema);
+        case MAP:
+            return toAvroMap(obj, schema);
 
-            case NULL:
-            case BOOLEAN:
-            case DOUBLE:
-            case FLOAT:
-            case INT:
-            case LONG:
-                return obj;
+        case UNION:
+            return toAvroUnion(obj, schema);
 
-            default:
-                throw new AvroRuntimeException("Can't convert from type " + schema.getType().toString());
+        case NULL:
+        case BOOLEAN:
+        case DOUBLE:
+        case FLOAT:
+        case INT:
+        case LONG:
+            return obj;
+
+        default:
+            throw new AvroRuntimeException("Can't convert from type " + schema.getType().toString());
 
         }
     }
@@ -189,7 +189,7 @@ public class CascadingToAvro {
             for (Object element : (Iterable<Object>) obj) {
                 array.add(toAvro(element, elementSchema));
             }
-            
+
             return new GenericData.Array(schema, array);
         } else
             throw new AvroRuntimeException("Can't convert from non-iterable to array");

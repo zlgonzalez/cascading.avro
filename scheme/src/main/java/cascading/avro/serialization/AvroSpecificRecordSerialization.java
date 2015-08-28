@@ -34,123 +34,120 @@ import java.io.OutputStream;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-
 /**
- * The {@link org.apache.hadoop.io.serializer.Serialization} used by jobs configured with {@link org.apache.avro.mapred.AvroJob}.
+ * The {@link org.apache.hadoop.io.serializer.Serialization} used by jobs
+ * configured with {@link org.apache.avro.mapred.AvroJob}.
  */
-public class AvroSpecificRecordSerialization<T> extends Configured
-    implements Serialization<T> {
+public class AvroSpecificRecordSerialization<T> extends Configured implements Serialization<T> {
 
-  public boolean accept(Class<?> c) {
-    return SpecificRecord.class.isAssignableFrom(c);
-  }
-
-  private Schema getSchema(Class<T> c) {
-    Schema schema = SCHEMA_CACHE.get(c);
-    if (schema == null) {
-      try {
-        schema = ((SpecificRecord) c.newInstance()).getSchema();
-        SCHEMA_CACHE.put(c, schema);
-      } catch (InstantiationException e) {
-        throw new RuntimeException("Unable to infer a schema from " + c);
-      } catch (IllegalAccessException e) {
-        throw new RuntimeException("Unable to infer a schema from " + c);
-      }
-    }
-    return schema;
-  }
-
-  /**
-   * Returns the specified map output deserializer.  Defaults to the final
-   * output deserializer if no map output schema was specified.
-   */
-  public Deserializer<T> getDeserializer(Class<T> c) {
-    DatumReader<T> datumReader = new SpecificDatumReader<T>(getSchema(c));
-    return new AvroSpecificRecordDeserializer(datumReader);
-  }
-
-  private static final DecoderFactory FACTORY = DecoderFactory.get();
-  private Map<Class<?>, Schema> SCHEMA_CACHE = new WeakHashMap<Class<?>, Schema>();
-
-  private class AvroSpecificRecordDeserializer
-      implements Deserializer<T> {
-
-    private DatumReader<T> reader;
-    private BinaryDecoder decoder;
-    private boolean isKey;
-
-    public AvroSpecificRecordDeserializer(DatumReader<T> reader) {
-      this.reader = reader;
+    public boolean accept(Class<?> c) {
+        return SpecificRecord.class.isAssignableFrom(c);
     }
 
-    public void open(InputStream in) {
-      this.decoder = FACTORY.directBinaryDecoder(in, decoder);
+    private Schema getSchema(Class<T> c) {
+        Schema schema = SCHEMA_CACHE.get(c);
+        if (schema == null) {
+            try {
+                schema = ((SpecificRecord) c.newInstance()).getSchema();
+                SCHEMA_CACHE.put(c, schema);
+            } catch (InstantiationException e) {
+                throw new RuntimeException("Unable to infer a schema from " + c);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException("Unable to infer a schema from " + c);
+            }
+        }
+        return schema;
     }
 
-    public T deserialize(T record)
-        throws IOException {
-      T datum = reader.read(record == null ? null : record, decoder);
-
-      return datum;
+    /**
+     * Returns the specified map output deserializer. Defaults to the final
+     * output deserializer if no map output schema was specified.
+     */
+    public Deserializer<T> getDeserializer(Class<T> c) {
+        DatumReader<T> datumReader = new SpecificDatumReader<T>(getSchema(c));
+        return new AvroSpecificRecordDeserializer(datumReader);
     }
 
-    public void close() throws IOException {
-      decoder.inputStream().close();
+    private static final DecoderFactory FACTORY = DecoderFactory.get();
+    private Map<Class<?>, Schema> SCHEMA_CACHE = new WeakHashMap<Class<?>, Schema>();
+
+    private class AvroSpecificRecordDeserializer implements Deserializer<T> {
+
+        private DatumReader<T> reader;
+        private BinaryDecoder decoder;
+        private boolean isKey;
+
+        public AvroSpecificRecordDeserializer(DatumReader<T> reader) {
+            this.reader = reader;
+        }
+
+        public void open(InputStream in) {
+            this.decoder = FACTORY.directBinaryDecoder(in, decoder);
+        }
+
+        public T deserialize(T record) throws IOException {
+            T datum = reader.read(record == null ? null : record, decoder);
+
+            return datum;
+        }
+
+        public void close() throws IOException {
+            decoder.inputStream().close();
+        }
+
     }
 
-  }
-
-
-  /**
-   * Returns the specified output serializer.
-   */
-  public Serializer<T> getSerializer(Class<T> c) {
-    return new AvroSpecificRecordSerializer(new ReflectDatumWriter<T>(getSchema(c)));
-  }
-
-  /**
-   * AvroSpecificRecordSerialization was added primarily for Scalding interop since Kryo 
-   * has trouble with some nested Avro records. The only time you need to use it in 
-   * Cascading is if you have Avro records inside a tuple and then do an operation that 
-   * forces a reduce. In this case Hadoop doesn't know how to serialize Avro records 
-   * so this class plugs in to do that.
-   * 
-   * Add it to the list of other serialization classes in "io.serializations" property. 
-   * The order is important, especially if Kryo is configured to accept all classes. 
-   * In this case you want this serializer to come first in the list.
-   * 
-   * FWIW - this has nothing to do with Scalding. It's usable and useful for all DSLs and 
-   * straight up Cascading
-   *
-   */
-private class AvroSpecificRecordSerializer implements Serializer<T> {
-
-    private DatumWriter<T> writer;
-    private OutputStream out;
-    private BinaryEncoder encoder;
-
-    public AvroSpecificRecordSerializer(DatumWriter<T> writer) {
-      this.writer = writer;
+    /**
+     * Returns the specified output serializer.
+     */
+    public Serializer<T> getSerializer(Class<T> c) {
+        return new AvroSpecificRecordSerializer(new ReflectDatumWriter<T>(getSchema(c)));
     }
 
-    public void open(OutputStream out) {
-      this.out = out;
-      this.encoder = new EncoderFactory().configureBlockSize(512)
-          .binaryEncoder(out, null);
-    }
+    /**
+     * AvroSpecificRecordSerialization was added primarily for Scalding interop
+     * since Kryo has trouble with some nested Avro records. The only time you
+     * need to use it in Cascading is if you have Avro records inside a tuple
+     * and then do an operation that forces a reduce. In this case Hadoop
+     * doesn't know how to serialize Avro records so this class plugs in to do
+     * that.
+     * 
+     * Add it to the list of other serialization classes in "io.serializations"
+     * property. The order is important, especially if Kryo is configured to
+     * accept all classes. In this case you want this serializer to come first
+     * in the list.
+     * 
+     * FWIW - this has nothing to do with Scalding. It's usable and useful for
+     * all DSLs and straight up Cascading
+     *
+     */
+    private class AvroSpecificRecordSerializer implements Serializer<T> {
 
-    public void serialize(T record) throws IOException {
-      writer.write(record, encoder);
-      // would be a lot faster if the Serializer interface had a flush()
-      // method and the Hadoop framework called it when needed rather
-      // than for every record.
-      encoder.flush();
-    }
+        private DatumWriter<T> writer;
+        private OutputStream out;
+        private BinaryEncoder encoder;
 
-    public void close() throws IOException {
-      out.close();
-    }
+        public AvroSpecificRecordSerializer(DatumWriter<T> writer) {
+            this.writer = writer;
+        }
 
-  }
+        public void open(OutputStream out) {
+            this.out = out;
+            this.encoder = new EncoderFactory().configureBlockSize(512).binaryEncoder(out, null);
+        }
+
+        public void serialize(T record) throws IOException {
+            writer.write(record, encoder);
+            // would be a lot faster if the Serializer interface had a flush()
+            // method and the Hadoop framework called it when needed rather
+            // than for every record.
+            encoder.flush();
+        }
+
+        public void close() throws IOException {
+            out.close();
+        }
+
+    }
 
 }

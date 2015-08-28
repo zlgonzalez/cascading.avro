@@ -3,184 +3,216 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package com.maxpoint.cascading.avro;  
+package com.maxpoint.cascading.avro;
+
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class test3 extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"test3\",\"namespace\":\"com.maxpoint.cascading.avro\",\"fields\":[{\"name\":\"aMapToListOfInt\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"array\",\"items\":\"int\"}}},{\"name\":\"aMapToMapToLong\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":\"long\"}}}]}");
-  public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
-  @Deprecated public java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> aMapToListOfInt;
-  @Deprecated public java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> aMapToMapToLong;
+public class test3 extends org.apache.avro.specific.SpecificRecordBase implements
+        org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
+            .parse("{\"type\":\"record\",\"name\":\"test3\",\"namespace\":\"com.maxpoint.cascading.avro\",\"fields\":[{\"name\":\"aMapToListOfInt\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"array\",\"items\":\"int\"}}},{\"name\":\"aMapToMapToLong\",\"type\":{\"type\":\"map\",\"values\":{\"type\":\"map\",\"values\":\"long\"}}}]}");
 
-  /**
-   * Default constructor.
-   */
-  public test3() {}
-
-  /**
-   * All-args constructor.
-   */
-  public test3(java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> aMapToListOfInt, java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> aMapToMapToLong) {
-    this.aMapToListOfInt = aMapToListOfInt;
-    this.aMapToMapToLong = aMapToMapToLong;
-  }
-
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
-  // Used by DatumWriter.  Applications should not call. 
-  public java.lang.Object get(int field$) {
-    switch (field$) {
-    case 0: return aMapToListOfInt;
-    case 1: return aMapToMapToLong;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+    public static org.apache.avro.Schema getClassSchema() {
+        return SCHEMA$;
     }
-  }
-  // Used by DatumReader.  Applications should not call. 
-  @SuppressWarnings(value="unchecked")
-  public void put(int field$, java.lang.Object value$) {
-    switch (field$) {
-    case 0: aMapToListOfInt = (java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>>)value$; break;
-    case 1: aMapToMapToLong = (java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>>)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
+
+    @Deprecated
+    public java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> aMapToListOfInt;
+    @Deprecated
+    public java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> aMapToMapToLong;
+
+    /**
+     * Default constructor.
+     */
+    public test3() {
     }
-  }
 
-  /**
-   * Gets the value of the 'aMapToListOfInt' field.
-   */
-  public java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> getAMapToListOfInt() {
-    return aMapToListOfInt;
-  }
-
-  /**
-   * Sets the value of the 'aMapToListOfInt' field.
-   * @param value the value to set.
-   */
-  public void setAMapToListOfInt(java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> value) {
-    this.aMapToListOfInt = value;
-  }
-
-  /**
-   * Gets the value of the 'aMapToMapToLong' field.
-   */
-  public java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> getAMapToMapToLong() {
-    return aMapToMapToLong;
-  }
-
-  /**
-   * Sets the value of the 'aMapToMapToLong' field.
-   * @param value the value to set.
-   */
-  public void setAMapToMapToLong(java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> value) {
-    this.aMapToMapToLong = value;
-  }
-
-  /** Creates a new test3 RecordBuilder */
-  public static com.maxpoint.cascading.avro.test3.Builder newBuilder() {
-    return new com.maxpoint.cascading.avro.test3.Builder();
-  }
-  
-  /** Creates a new test3 RecordBuilder by copying an existing Builder */
-  public static com.maxpoint.cascading.avro.test3.Builder newBuilder(com.maxpoint.cascading.avro.test3.Builder other) {
-    return new com.maxpoint.cascading.avro.test3.Builder(other);
-  }
-  
-  /** Creates a new test3 RecordBuilder by copying an existing test3 instance */
-  public static com.maxpoint.cascading.avro.test3.Builder newBuilder(com.maxpoint.cascading.avro.test3 other) {
-    return new com.maxpoint.cascading.avro.test3.Builder(other);
-  }
-  
-  /**
-   * RecordBuilder for test3 instances.
-   */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test3>
-    implements org.apache.avro.data.RecordBuilder<test3> {
-
-    private java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> aMapToListOfInt;
-    private java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> aMapToMapToLong;
-
-    /** Creates a new Builder */
-    private Builder() {
-      super(com.maxpoint.cascading.avro.test3.SCHEMA$);
+    /**
+     * All-args constructor.
+     */
+    public test3(java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> aMapToListOfInt,
+            java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> aMapToMapToLong) {
+        this.aMapToListOfInt = aMapToListOfInt;
+        this.aMapToMapToLong = aMapToMapToLong;
     }
-    
-    /** Creates a Builder by copying an existing Builder */
-    private Builder(com.maxpoint.cascading.avro.test3.Builder other) {
-      super(other);
+
+    public org.apache.avro.Schema getSchema() {
+        return SCHEMA$;
     }
-    
-    /** Creates a Builder by copying an existing test3 instance */
-    private Builder(com.maxpoint.cascading.avro.test3 other) {
+
+    // Used by DatumWriter. Applications should not call.
+    public java.lang.Object get(int field$) {
+        switch (field$) {
+        case 0:
+            return aMapToListOfInt;
+        case 1:
+            return aMapToMapToLong;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    // Used by DatumReader. Applications should not call.
+    @SuppressWarnings(value = "unchecked")
+    public void put(int field$, java.lang.Object value$) {
+        switch (field$) {
+        case 0:
+            aMapToListOfInt = (java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>>) value$;
+            break;
+        case 1:
+            aMapToMapToLong = (java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>>) value$;
+            break;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    /**
+     * Gets the value of the 'aMapToListOfInt' field.
+     */
+    public java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> getAMapToListOfInt() {
+        return aMapToListOfInt;
+    }
+
+    /**
+     * Sets the value of the 'aMapToListOfInt' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setAMapToListOfInt(java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> value) {
+        this.aMapToListOfInt = value;
+    }
+
+    /**
+     * Gets the value of the 'aMapToMapToLong' field.
+     */
+    public java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> getAMapToMapToLong() {
+        return aMapToMapToLong;
+    }
+
+    /**
+     * Sets the value of the 'aMapToMapToLong' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setAMapToMapToLong(
+            java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> value) {
+        this.aMapToMapToLong = value;
+    }
+
+    /** Creates a new test3 RecordBuilder */
+    public static com.maxpoint.cascading.avro.test3.Builder newBuilder() {
+        return new com.maxpoint.cascading.avro.test3.Builder();
+    }
+
+    /** Creates a new test3 RecordBuilder by copying an existing Builder */
+    public static com.maxpoint.cascading.avro.test3.Builder newBuilder(com.maxpoint.cascading.avro.test3.Builder other) {
+        return new com.maxpoint.cascading.avro.test3.Builder(other);
+    }
+
+    /** Creates a new test3 RecordBuilder by copying an existing test3 instance */
+    public static com.maxpoint.cascading.avro.test3.Builder newBuilder(com.maxpoint.cascading.avro.test3 other) {
+        return new com.maxpoint.cascading.avro.test3.Builder(other);
+    }
+
+    /**
+     * RecordBuilder for test3 instances.
+     */
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test3> implements
+            org.apache.avro.data.RecordBuilder<test3> {
+
+        private java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> aMapToListOfInt;
+        private java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> aMapToMapToLong;
+
+        /** Creates a new Builder */
+        private Builder() {
             super(com.maxpoint.cascading.avro.test3.SCHEMA$);
-      if (isValidValue(fields()[0], other.aMapToListOfInt)) {
-        this.aMapToListOfInt = data().deepCopy(fields()[0].schema(), other.aMapToListOfInt);
-        fieldSetFlags()[0] = true;
-      }
-      if (isValidValue(fields()[1], other.aMapToMapToLong)) {
-        this.aMapToMapToLong = data().deepCopy(fields()[1].schema(), other.aMapToMapToLong);
-        fieldSetFlags()[1] = true;
-      }
-    }
+        }
 
-    /** Gets the value of the 'aMapToListOfInt' field */
-    public java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> getAMapToListOfInt() {
-      return aMapToListOfInt;
-    }
-    
-    /** Sets the value of the 'aMapToListOfInt' field */
-    public com.maxpoint.cascading.avro.test3.Builder setAMapToListOfInt(java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>> value) {
-      validate(fields()[0], value);
-      this.aMapToListOfInt = value;
-      fieldSetFlags()[0] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'aMapToListOfInt' field has been set */
-    public boolean hasAMapToListOfInt() {
-      return fieldSetFlags()[0];
-    }
-    
-    /** Clears the value of the 'aMapToListOfInt' field */
-    public com.maxpoint.cascading.avro.test3.Builder clearAMapToListOfInt() {
-      aMapToListOfInt = null;
-      fieldSetFlags()[0] = false;
-      return this;
-    }
+        /** Creates a Builder by copying an existing Builder */
+        private Builder(com.maxpoint.cascading.avro.test3.Builder other) {
+            super(other);
+        }
 
-    /** Gets the value of the 'aMapToMapToLong' field */
-    public java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> getAMapToMapToLong() {
-      return aMapToMapToLong;
-    }
-    
-    /** Sets the value of the 'aMapToMapToLong' field */
-    public com.maxpoint.cascading.avro.test3.Builder setAMapToMapToLong(java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>> value) {
-      validate(fields()[1], value);
-      this.aMapToMapToLong = value;
-      fieldSetFlags()[1] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'aMapToMapToLong' field has been set */
-    public boolean hasAMapToMapToLong() {
-      return fieldSetFlags()[1];
-    }
-    
-    /** Clears the value of the 'aMapToMapToLong' field */
-    public com.maxpoint.cascading.avro.test3.Builder clearAMapToMapToLong() {
-      aMapToMapToLong = null;
-      fieldSetFlags()[1] = false;
-      return this;
-    }
+        /** Creates a Builder by copying an existing test3 instance */
+        private Builder(com.maxpoint.cascading.avro.test3 other) {
+            super(com.maxpoint.cascading.avro.test3.SCHEMA$);
+            if (isValidValue(fields()[0], other.aMapToListOfInt)) {
+                this.aMapToListOfInt = data().deepCopy(fields()[0].schema(), other.aMapToListOfInt);
+                fieldSetFlags()[0] = true;
+            }
+            if (isValidValue(fields()[1], other.aMapToMapToLong)) {
+                this.aMapToMapToLong = data().deepCopy(fields()[1].schema(), other.aMapToMapToLong);
+                fieldSetFlags()[1] = true;
+            }
+        }
 
-    @Override
-    public test3 build() {
-      try {
-        test3 record = new test3();
-        record.aMapToListOfInt = fieldSetFlags()[0] ? this.aMapToListOfInt : (java.util.Map<java.lang.CharSequence,java.util.List<java.lang.Integer>>) defaultValue(fields()[0]);
-        record.aMapToMapToLong = fieldSetFlags()[1] ? this.aMapToMapToLong : (java.util.Map<java.lang.CharSequence,java.util.Map<java.lang.CharSequence,java.lang.Long>>) defaultValue(fields()[1]);
-        return record;
-      } catch (Exception e) {
-        throw new org.apache.avro.AvroRuntimeException(e);
-      }
+        /** Gets the value of the 'aMapToListOfInt' field */
+        public java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> getAMapToListOfInt() {
+            return aMapToListOfInt;
+        }
+
+        /** Sets the value of the 'aMapToListOfInt' field */
+        public com.maxpoint.cascading.avro.test3.Builder setAMapToListOfInt(
+                java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>> value) {
+            validate(fields()[0], value);
+            this.aMapToListOfInt = value;
+            fieldSetFlags()[0] = true;
+            return this;
+        }
+
+        /** Checks whether the 'aMapToListOfInt' field has been set */
+        public boolean hasAMapToListOfInt() {
+            return fieldSetFlags()[0];
+        }
+
+        /** Clears the value of the 'aMapToListOfInt' field */
+        public com.maxpoint.cascading.avro.test3.Builder clearAMapToListOfInt() {
+            aMapToListOfInt = null;
+            fieldSetFlags()[0] = false;
+            return this;
+        }
+
+        /** Gets the value of the 'aMapToMapToLong' field */
+        public java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> getAMapToMapToLong() {
+            return aMapToMapToLong;
+        }
+
+        /** Sets the value of the 'aMapToMapToLong' field */
+        public com.maxpoint.cascading.avro.test3.Builder setAMapToMapToLong(
+                java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>> value) {
+            validate(fields()[1], value);
+            this.aMapToMapToLong = value;
+            fieldSetFlags()[1] = true;
+            return this;
+        }
+
+        /** Checks whether the 'aMapToMapToLong' field has been set */
+        public boolean hasAMapToMapToLong() {
+            return fieldSetFlags()[1];
+        }
+
+        /** Clears the value of the 'aMapToMapToLong' field */
+        public com.maxpoint.cascading.avro.test3.Builder clearAMapToMapToLong() {
+            aMapToMapToLong = null;
+            fieldSetFlags()[1] = false;
+            return this;
+        }
+
+        @Override
+        public test3 build() {
+            try {
+                test3 record = new test3();
+                record.aMapToListOfInt = fieldSetFlags()[0] ? this.aMapToListOfInt
+                        : (java.util.Map<java.lang.CharSequence, java.util.List<java.lang.Integer>>) defaultValue(fields()[0]);
+                record.aMapToMapToLong = fieldSetFlags()[1] ? this.aMapToMapToLong
+                        : (java.util.Map<java.lang.CharSequence, java.util.Map<java.lang.CharSequence, java.lang.Long>>) defaultValue(fields()[1]);
+                return record;
+            } catch (Exception e) {
+                throw new org.apache.avro.AvroRuntimeException(e);
+            }
+        }
     }
-  }
 }

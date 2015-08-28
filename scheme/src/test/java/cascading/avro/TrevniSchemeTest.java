@@ -45,86 +45,82 @@ import cascading.tuple.TupleEntryIterator;
 
 public class TrevniSchemeTest extends Assert {
 
-	@Rule
-	public final TemporaryFolder tempDir = new TemporaryFolder();
-	
-	
-	@Test
-	public void testSpecifiedColumns() throws Exception {
-		
-		final Schema schema = new Schema.Parser().parse(getClass()
-				.getResourceAsStream("electric-power-usage.avsc"));
-		
-		
-		final Schema specifiedColumnsSchema = new Schema.Parser().parse(getClass()
-				.getResourceAsStream("electric-power-usage2.avsc"));
-		
-		Configuration hadoopConf = new Configuration();	
-		
-		// compression codec for trevni column block.
-		// KKr - This fails on systems without Snappy installed, so commenting it out
-		// hadoopConf.set("trevni.meta.trevni.codec", "snappy");
-		
-		Map<Object, Object> confMap = new HashMap<Object, Object>();
-		Iterator<Entry<String, String>> iter = hadoopConf.iterator();
-		while (iter.hasNext()) {
-			Entry<String, String> entry = iter.next();
-			confMap.put(entry.getKey(), entry.getValue());
-		}
-		
-		JobConf jobConf = new JobConf(hadoopConf);		
-		
-		String in = tempDir.getRoot().toString() + "/specifiedColumns/in";
-		String out = tempDir.getRoot().toString() + "/specifiedColumns/out";	
+    @Rule
+    public final TemporaryFolder tempDir = new TemporaryFolder();
 
-		final Fields fields = new Fields("addressCode", "timestamp", "devicePowerEventList");
-		
-		final Fields innerFields = new Fields("power", "deviceType", "deviceId", "status");
-		
-		
-		Tap lfsSource = new Lfs(new TrevniScheme(schema), in, SinkMode.REPLACE);
-		
-		TupleEntryCollector write = lfsSource.openForWrite(new HadoopFlowProcess(jobConf));
-		
-		List<TupleEntry> devicePowerEventList = new ArrayList<TupleEntry>();
-		devicePowerEventList.add(new TupleEntry(innerFields, new Tuple(1300.0, 5, 0, 1)));
-		devicePowerEventList.add(new TupleEntry(innerFields, new Tuple(3500.4, 4, 1, 0)));
-		
-		List<TupleEntry> devicePowerEventList2 = new ArrayList<TupleEntry>();
-		devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(3570.0, 3, 0, 1)));
-		devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(110.4, 2, 1, 0)));
-		devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(250.9, 3, 3, 1)));
+    @Test
+    public void testSpecifiedColumns() throws Exception {
 
-		
-		write.add(new TupleEntry(fields, new Tuple("4874025000-514", 1356998460000L, devicePowerEventList)));
-		write.add(new TupleEntry(fields, new Tuple("4725033000-4031", 1356998520000L, devicePowerEventList2)));
-	
-		write.close();
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("electric-power-usage.avsc"));
 
-		Pipe writePipe = new Pipe("tuples to trevni");
-		Tap lfsTrevniSource = new Lfs(new TrevniScheme(schema), in + "/*");
-		Tap trevniSink = new Lfs(new TrevniScheme(schema), out);
+        final Schema specifiedColumnsSchema = new Schema.Parser().parse(getClass().getResourceAsStream(
+                "electric-power-usage2.avsc"));
 
-		Flow flow = new HadoopFlowConnector(confMap).connect(lfsTrevniSource, trevniSink, writePipe);
-		flow.complete();
+        Configuration hadoopConf = new Configuration();
 
-		// Read the specified columns.		
-		Tap trevniSource = new Lfs(new TrevniScheme(specifiedColumnsSchema), out + "/*");	
+        // compression codec for trevni column block.
+        // KKr - This fails on systems without Snappy installed, so commenting
+        // it out
+        // hadoopConf.set("trevni.meta.trevni.codec", "snappy");
 
-		TupleEntryIterator iterator = trevniSource.openForRead(new HadoopFlowProcess(jobConf));
+        Map<Object, Object> confMap = new HashMap<Object, Object>();
+        Iterator<Entry<String, String>> iter = hadoopConf.iterator();
+        while (iter.hasNext()) {
+            Entry<String, String> entry = iter.next();
+            confMap.put(entry.getKey(), entry.getValue());
+        }
 
-		assertTrue(iterator.hasNext());
-		
-		final TupleEntry readEntry1 = iterator.next();
-		
-		assertTrue(readEntry1.getString("addressCode").equals("4874025000-514"));
-		assertEquals(2, ((List)readEntry1.getObject("devicePowerEventList")).size());
-		assertEquals(1300.0, ((Tuple)((List)readEntry1.getObject("devicePowerEventList")).get(0)).getDouble(0));
-		
-		final TupleEntry readEntry2 = iterator.next();
-		
-		assertTrue(readEntry2.getString("addressCode").equals("4725033000-4031"));
-		assertEquals(3, ((List)readEntry2.getObject("devicePowerEventList")).size());
-		assertEquals(110.4, ((Tuple)((List)readEntry1.getObject("devicePowerEventList")).get(1)).getDouble(0));
-	}
+        JobConf jobConf = new JobConf(hadoopConf);
+
+        String in = tempDir.getRoot().toString() + "/specifiedColumns/in";
+        String out = tempDir.getRoot().toString() + "/specifiedColumns/out";
+
+        final Fields fields = new Fields("addressCode", "timestamp", "devicePowerEventList");
+
+        final Fields innerFields = new Fields("power", "deviceType", "deviceId", "status");
+
+        Tap lfsSource = new Lfs(new TrevniScheme(schema), in, SinkMode.REPLACE);
+
+        TupleEntryCollector write = lfsSource.openForWrite(new HadoopFlowProcess(jobConf));
+
+        List<TupleEntry> devicePowerEventList = new ArrayList<TupleEntry>();
+        devicePowerEventList.add(new TupleEntry(innerFields, new Tuple(1300.0, 5, 0, 1)));
+        devicePowerEventList.add(new TupleEntry(innerFields, new Tuple(3500.4, 4, 1, 0)));
+
+        List<TupleEntry> devicePowerEventList2 = new ArrayList<TupleEntry>();
+        devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(3570.0, 3, 0, 1)));
+        devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(110.4, 2, 1, 0)));
+        devicePowerEventList2.add(new TupleEntry(innerFields, new Tuple(250.9, 3, 3, 1)));
+
+        write.add(new TupleEntry(fields, new Tuple("4874025000-514", 1356998460000L, devicePowerEventList)));
+        write.add(new TupleEntry(fields, new Tuple("4725033000-4031", 1356998520000L, devicePowerEventList2)));
+
+        write.close();
+
+        Pipe writePipe = new Pipe("tuples to trevni");
+        Tap lfsTrevniSource = new Lfs(new TrevniScheme(schema), in + "/*");
+        Tap trevniSink = new Lfs(new TrevniScheme(schema), out);
+
+        Flow flow = new HadoopFlowConnector(confMap).connect(lfsTrevniSource, trevniSink, writePipe);
+        flow.complete();
+
+        // Read the specified columns.
+        Tap trevniSource = new Lfs(new TrevniScheme(specifiedColumnsSchema), out + "/*");
+
+        TupleEntryIterator iterator = trevniSource.openForRead(new HadoopFlowProcess(jobConf));
+
+        assertTrue(iterator.hasNext());
+
+        final TupleEntry readEntry1 = iterator.next();
+
+        assertTrue(readEntry1.getString("addressCode").equals("4874025000-514"));
+        assertEquals(2, ((List) readEntry1.getObject("devicePowerEventList")).size());
+        assertEquals(1300.0, ((Tuple) ((List) readEntry1.getObject("devicePowerEventList")).get(0)).getDouble(0));
+
+        final TupleEntry readEntry2 = iterator.next();
+
+        assertTrue(readEntry2.getString("addressCode").equals("4725033000-4031"));
+        assertEquals(3, ((List) readEntry2.getObject("devicePowerEventList")).size());
+        assertEquals(110.4, ((Tuple) ((List) readEntry1.getObject("devicePowerEventList")).get(1)).getDouble(0));
+    }
 }

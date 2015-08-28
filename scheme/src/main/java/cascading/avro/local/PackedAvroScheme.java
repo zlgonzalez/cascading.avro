@@ -28,20 +28,22 @@ public class PackedAvroScheme<T> extends AvroScheme {
     private static final Logger LOG = LoggerFactory.getLogger(PackedAvroScheme.class);
 
     /**
-     * This scheme should be used when you don't want cascading.avro to automatically unpack or pack your Avro objects.
-     * The constructors are similar to the super class but there is only ever one field incoming or outgoing. The parameter
-     * is the type of Avro record to read.
+     * This scheme should be used when you don't want cascading.avro to
+     * automatically unpack or pack your Avro objects. The constructors are
+     * similar to the super class but there is only ever one field incoming or
+     * outgoing. The parameter is the type of Avro record to read.
      */
-
 
     public PackedAvroScheme() {
         this(null);
     }
 
     /**
-     * Constructs a scheme from an Avro schema and names the single field using the Schema name.
+     * Constructs a scheme from an Avro schema and names the single field using
+     * the Schema name.
      *
-     * @param schema The avro schema to use
+     * @param schema
+     *            The avro schema to use
      */
     public PackedAvroScheme(Schema schema) {
         this.schema = schema;
@@ -78,7 +80,7 @@ public class PackedAvroScheme<T> extends AvroScheme {
             e.printStackTrace();
             System.exit(1);
         }
-        //should never get here
+        // should never get here
         return null;
     }
 
@@ -89,35 +91,45 @@ public class PackedAvroScheme<T> extends AvroScheme {
      * @param sinkCall
      */
     @Override
-    public void sinkPrepare(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall) {
+    public void sinkPrepare(FlowProcess<? extends Properties> flowProcess,
+            SinkCall<DataFileWriter, OutputStream> sinkCall) {
         if (schema == null)
             throw new RuntimeException("Cannot have a null schema for the sink (yet).");
 
         sinkCall.setContext(createOutput(sinkCall.getOutput()));
 
-
     }
 
     /**
-     * Sink method to take an outgoing tuple and write it to Avro. In this scheme the incoming avro is passed through.
+     * Sink method to take an outgoing tuple and write it to Avro. In this
+     * scheme the incoming avro is passed through.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param sinkCall
+     *            The cascading SinkCall object. Should be passed in by
+     *            cascading automatically.
      * @throws java.io.IOException
      */
     @Override
-    public void sink(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall) throws IOException {
+    public void sink(FlowProcess<? extends Properties> flowProcess, SinkCall<DataFileWriter, OutputStream> sinkCall)
+            throws IOException {
         TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
-        //noinspection unchecked
+        // noinspection unchecked
         sinkCall.getContext().append((T) tupleEntry.getObject(Fields.FIRST));
     }
 
-
     /**
-     * Sets to Fields.UNKNOWN if no schema is present, otherwise uses the name of the Schema.
+     * Sets to Fields.UNKNOWN if no schema is present, otherwise uses the name
+     * of the Schema.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param tap
+     *            The cascading Tap object. Should be passed in by cascading
+     *            automatically.
      * @return Fields The source cascading fields.
      */
     @Override
@@ -131,15 +143,22 @@ public class PackedAvroScheme<T> extends AvroScheme {
     }
 
     /**
-     * Reads in Avro records of type T and adds them as the first field in a tuple.
+     * Reads in Avro records of type T and adds them as the first field in a
+     * tuple.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param sourceCall  The cascading SourceCall object. Should be passed in by cascading automatically.
-     * @return boolean true on successful parsing and collection, false on failure.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param sourceCall
+     *            The cascading SourceCall object. Should be passed in by
+     *            cascading automatically.
+     * @return boolean true on successful parsing and collection, false on
+     *         failure.
      * @throws java.io.IOException
      */
     @Override
-    public boolean source(FlowProcess<? extends Properties> flowProcess, SourceCall<DataFileStream, InputStream> sourceCall) {
+    public boolean source(FlowProcess<? extends Properties> flowProcess,
+            SourceCall<DataFileStream, InputStream> sourceCall) {
         if (sourceCall.getContext().hasNext()) {
             T record = (T) sourceCall.getContext().next();
             Tuple tuple = sourceCall.getIncomingEntry().getTuple();

@@ -3,234 +3,271 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package cascading.avro.pojo;  
+package cascading.avro.pojo;
+
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class TopPojo extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"TopPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Id\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"State\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"Things\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}}],\"default\":null}]}");
-  public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
-  @Deprecated public java.lang.Integer Id;
-  @Deprecated public java.lang.CharSequence State;
-  @Deprecated public java.util.List<cascading.avro.pojo.EmbeddedPojo> Things;
+public class TopPojo extends org.apache.avro.specific.SpecificRecordBase implements
+        org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
+            .parse("{\"type\":\"record\",\"name\":\"TopPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Id\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"State\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"Things\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}}],\"default\":null}]}");
 
-  /**
-   * Default constructor.
-   */
-  public TopPojo() {}
-
-  /**
-   * All-args constructor.
-   */
-  public TopPojo(java.lang.Integer Id, java.lang.CharSequence State, java.util.List<cascading.avro.pojo.EmbeddedPojo> Things) {
-    this.Id = Id;
-    this.State = State;
-    this.Things = Things;
-  }
-
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
-  // Used by DatumWriter.  Applications should not call. 
-  public java.lang.Object get(int field$) {
-    switch (field$) {
-    case 0: return Id;
-    case 1: return State;
-    case 2: return Things;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-  // Used by DatumReader.  Applications should not call. 
-  @SuppressWarnings(value="unchecked")
-  public void put(int field$, java.lang.Object value$) {
-    switch (field$) {
-    case 0: Id = (java.lang.Integer)value$; break;
-    case 1: State = (java.lang.CharSequence)value$; break;
-    case 2: Things = (java.util.List<cascading.avro.pojo.EmbeddedPojo>)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-
-  /**
-   * Gets the value of the 'Id' field.
-   */
-  public java.lang.Integer getId() {
-    return Id;
-  }
-
-  /**
-   * Sets the value of the 'Id' field.
-   * @param value the value to set.
-   */
-  public void setId(java.lang.Integer value) {
-    this.Id = value;
-  }
-
-  /**
-   * Gets the value of the 'State' field.
-   */
-  public java.lang.CharSequence getState() {
-    return State;
-  }
-
-  /**
-   * Sets the value of the 'State' field.
-   * @param value the value to set.
-   */
-  public void setState(java.lang.CharSequence value) {
-    this.State = value;
-  }
-
-  /**
-   * Gets the value of the 'Things' field.
-   */
-  public java.util.List<cascading.avro.pojo.EmbeddedPojo> getThings() {
-    return Things;
-  }
-
-  /**
-   * Sets the value of the 'Things' field.
-   * @param value the value to set.
-   */
-  public void setThings(java.util.List<cascading.avro.pojo.EmbeddedPojo> value) {
-    this.Things = value;
-  }
-
-  /** Creates a new TopPojo RecordBuilder */
-  public static cascading.avro.pojo.TopPojo.Builder newBuilder() {
-    return new cascading.avro.pojo.TopPojo.Builder();
-  }
-  
-  /** Creates a new TopPojo RecordBuilder by copying an existing Builder */
-  public static cascading.avro.pojo.TopPojo.Builder newBuilder(cascading.avro.pojo.TopPojo.Builder other) {
-    return new cascading.avro.pojo.TopPojo.Builder(other);
-  }
-  
-  /** Creates a new TopPojo RecordBuilder by copying an existing TopPojo instance */
-  public static cascading.avro.pojo.TopPojo.Builder newBuilder(cascading.avro.pojo.TopPojo other) {
-    return new cascading.avro.pojo.TopPojo.Builder(other);
-  }
-  
-  /**
-   * RecordBuilder for TopPojo instances.
-   */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TopPojo>
-    implements org.apache.avro.data.RecordBuilder<TopPojo> {
-
-    private java.lang.Integer Id;
-    private java.lang.CharSequence State;
-    private java.util.List<cascading.avro.pojo.EmbeddedPojo> Things;
-
-    /** Creates a new Builder */
-    private Builder() {
-      super(cascading.avro.pojo.TopPojo.SCHEMA$);
-    }
-    
-    /** Creates a Builder by copying an existing Builder */
-    private Builder(cascading.avro.pojo.TopPojo.Builder other) {
-      super(other);
-    }
-    
-    /** Creates a Builder by copying an existing TopPojo instance */
-    private Builder(cascading.avro.pojo.TopPojo other) {
-            super(cascading.avro.pojo.TopPojo.SCHEMA$);
-      if (isValidValue(fields()[0], other.Id)) {
-        this.Id = data().deepCopy(fields()[0].schema(), other.Id);
-        fieldSetFlags()[0] = true;
-      }
-      if (isValidValue(fields()[1], other.State)) {
-        this.State = data().deepCopy(fields()[1].schema(), other.State);
-        fieldSetFlags()[1] = true;
-      }
-      if (isValidValue(fields()[2], other.Things)) {
-        this.Things = data().deepCopy(fields()[2].schema(), other.Things);
-        fieldSetFlags()[2] = true;
-      }
+    public static org.apache.avro.Schema getClassSchema() {
+        return SCHEMA$;
     }
 
-    /** Gets the value of the 'Id' field */
+    @Deprecated
+    public java.lang.Integer Id;
+    @Deprecated
+    public java.lang.CharSequence State;
+    @Deprecated
+    public java.util.List<cascading.avro.pojo.EmbeddedPojo> Things;
+
+    /**
+     * Default constructor.
+     */
+    public TopPojo() {
+    }
+
+    /**
+     * All-args constructor.
+     */
+    public TopPojo(java.lang.Integer Id, java.lang.CharSequence State,
+            java.util.List<cascading.avro.pojo.EmbeddedPojo> Things) {
+        this.Id = Id;
+        this.State = State;
+        this.Things = Things;
+    }
+
+    public org.apache.avro.Schema getSchema() {
+        return SCHEMA$;
+    }
+
+    // Used by DatumWriter. Applications should not call.
+    public java.lang.Object get(int field$) {
+        switch (field$) {
+        case 0:
+            return Id;
+        case 1:
+            return State;
+        case 2:
+            return Things;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    // Used by DatumReader. Applications should not call.
+    @SuppressWarnings(value = "unchecked")
+    public void put(int field$, java.lang.Object value$) {
+        switch (field$) {
+        case 0:
+            Id = (java.lang.Integer) value$;
+            break;
+        case 1:
+            State = (java.lang.CharSequence) value$;
+            break;
+        case 2:
+            Things = (java.util.List<cascading.avro.pojo.EmbeddedPojo>) value$;
+            break;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    /**
+     * Gets the value of the 'Id' field.
+     */
     public java.lang.Integer getId() {
-      return Id;
-    }
-    
-    /** Sets the value of the 'Id' field */
-    public cascading.avro.pojo.TopPojo.Builder setId(java.lang.Integer value) {
-      validate(fields()[0], value);
-      this.Id = value;
-      fieldSetFlags()[0] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'Id' field has been set */
-    public boolean hasId() {
-      return fieldSetFlags()[0];
-    }
-    
-    /** Clears the value of the 'Id' field */
-    public cascading.avro.pojo.TopPojo.Builder clearId() {
-      Id = null;
-      fieldSetFlags()[0] = false;
-      return this;
+        return Id;
     }
 
-    /** Gets the value of the 'State' field */
+    /**
+     * Sets the value of the 'Id' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setId(java.lang.Integer value) {
+        this.Id = value;
+    }
+
+    /**
+     * Gets the value of the 'State' field.
+     */
     public java.lang.CharSequence getState() {
-      return State;
-    }
-    
-    /** Sets the value of the 'State' field */
-    public cascading.avro.pojo.TopPojo.Builder setState(java.lang.CharSequence value) {
-      validate(fields()[1], value);
-      this.State = value;
-      fieldSetFlags()[1] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'State' field has been set */
-    public boolean hasState() {
-      return fieldSetFlags()[1];
-    }
-    
-    /** Clears the value of the 'State' field */
-    public cascading.avro.pojo.TopPojo.Builder clearState() {
-      State = null;
-      fieldSetFlags()[1] = false;
-      return this;
+        return State;
     }
 
-    /** Gets the value of the 'Things' field */
+    /**
+     * Sets the value of the 'State' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setState(java.lang.CharSequence value) {
+        this.State = value;
+    }
+
+    /**
+     * Gets the value of the 'Things' field.
+     */
     public java.util.List<cascading.avro.pojo.EmbeddedPojo> getThings() {
-      return Things;
-    }
-    
-    /** Sets the value of the 'Things' field */
-    public cascading.avro.pojo.TopPojo.Builder setThings(java.util.List<cascading.avro.pojo.EmbeddedPojo> value) {
-      validate(fields()[2], value);
-      this.Things = value;
-      fieldSetFlags()[2] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'Things' field has been set */
-    public boolean hasThings() {
-      return fieldSetFlags()[2];
-    }
-    
-    /** Clears the value of the 'Things' field */
-    public cascading.avro.pojo.TopPojo.Builder clearThings() {
-      Things = null;
-      fieldSetFlags()[2] = false;
-      return this;
+        return Things;
     }
 
-    @Override
-    public TopPojo build() {
-      try {
-        TopPojo record = new TopPojo();
-        record.Id = fieldSetFlags()[0] ? this.Id : (java.lang.Integer) defaultValue(fields()[0]);
-        record.State = fieldSetFlags()[1] ? this.State : (java.lang.CharSequence) defaultValue(fields()[1]);
-        record.Things = fieldSetFlags()[2] ? this.Things : (java.util.List<cascading.avro.pojo.EmbeddedPojo>) defaultValue(fields()[2]);
-        return record;
-      } catch (Exception e) {
-        throw new org.apache.avro.AvroRuntimeException(e);
-      }
+    /**
+     * Sets the value of the 'Things' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setThings(java.util.List<cascading.avro.pojo.EmbeddedPojo> value) {
+        this.Things = value;
     }
-  }
+
+    /** Creates a new TopPojo RecordBuilder */
+    public static cascading.avro.pojo.TopPojo.Builder newBuilder() {
+        return new cascading.avro.pojo.TopPojo.Builder();
+    }
+
+    /** Creates a new TopPojo RecordBuilder by copying an existing Builder */
+    public static cascading.avro.pojo.TopPojo.Builder newBuilder(cascading.avro.pojo.TopPojo.Builder other) {
+        return new cascading.avro.pojo.TopPojo.Builder(other);
+    }
+
+    /**
+     * Creates a new TopPojo RecordBuilder by copying an existing TopPojo
+     * instance
+     */
+    public static cascading.avro.pojo.TopPojo.Builder newBuilder(cascading.avro.pojo.TopPojo other) {
+        return new cascading.avro.pojo.TopPojo.Builder(other);
+    }
+
+    /**
+     * RecordBuilder for TopPojo instances.
+     */
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TopPojo> implements
+            org.apache.avro.data.RecordBuilder<TopPojo> {
+
+        private java.lang.Integer Id;
+        private java.lang.CharSequence State;
+        private java.util.List<cascading.avro.pojo.EmbeddedPojo> Things;
+
+        /** Creates a new Builder */
+        private Builder() {
+            super(cascading.avro.pojo.TopPojo.SCHEMA$);
+        }
+
+        /** Creates a Builder by copying an existing Builder */
+        private Builder(cascading.avro.pojo.TopPojo.Builder other) {
+            super(other);
+        }
+
+        /** Creates a Builder by copying an existing TopPojo instance */
+        private Builder(cascading.avro.pojo.TopPojo other) {
+            super(cascading.avro.pojo.TopPojo.SCHEMA$);
+            if (isValidValue(fields()[0], other.Id)) {
+                this.Id = data().deepCopy(fields()[0].schema(), other.Id);
+                fieldSetFlags()[0] = true;
+            }
+            if (isValidValue(fields()[1], other.State)) {
+                this.State = data().deepCopy(fields()[1].schema(), other.State);
+                fieldSetFlags()[1] = true;
+            }
+            if (isValidValue(fields()[2], other.Things)) {
+                this.Things = data().deepCopy(fields()[2].schema(), other.Things);
+                fieldSetFlags()[2] = true;
+            }
+        }
+
+        /** Gets the value of the 'Id' field */
+        public java.lang.Integer getId() {
+            return Id;
+        }
+
+        /** Sets the value of the 'Id' field */
+        public cascading.avro.pojo.TopPojo.Builder setId(java.lang.Integer value) {
+            validate(fields()[0], value);
+            this.Id = value;
+            fieldSetFlags()[0] = true;
+            return this;
+        }
+
+        /** Checks whether the 'Id' field has been set */
+        public boolean hasId() {
+            return fieldSetFlags()[0];
+        }
+
+        /** Clears the value of the 'Id' field */
+        public cascading.avro.pojo.TopPojo.Builder clearId() {
+            Id = null;
+            fieldSetFlags()[0] = false;
+            return this;
+        }
+
+        /** Gets the value of the 'State' field */
+        public java.lang.CharSequence getState() {
+            return State;
+        }
+
+        /** Sets the value of the 'State' field */
+        public cascading.avro.pojo.TopPojo.Builder setState(java.lang.CharSequence value) {
+            validate(fields()[1], value);
+            this.State = value;
+            fieldSetFlags()[1] = true;
+            return this;
+        }
+
+        /** Checks whether the 'State' field has been set */
+        public boolean hasState() {
+            return fieldSetFlags()[1];
+        }
+
+        /** Clears the value of the 'State' field */
+        public cascading.avro.pojo.TopPojo.Builder clearState() {
+            State = null;
+            fieldSetFlags()[1] = false;
+            return this;
+        }
+
+        /** Gets the value of the 'Things' field */
+        public java.util.List<cascading.avro.pojo.EmbeddedPojo> getThings() {
+            return Things;
+        }
+
+        /** Sets the value of the 'Things' field */
+        public cascading.avro.pojo.TopPojo.Builder setThings(java.util.List<cascading.avro.pojo.EmbeddedPojo> value) {
+            validate(fields()[2], value);
+            this.Things = value;
+            fieldSetFlags()[2] = true;
+            return this;
+        }
+
+        /** Checks whether the 'Things' field has been set */
+        public boolean hasThings() {
+            return fieldSetFlags()[2];
+        }
+
+        /** Clears the value of the 'Things' field */
+        public cascading.avro.pojo.TopPojo.Builder clearThings() {
+            Things = null;
+            fieldSetFlags()[2] = false;
+            return this;
+        }
+
+        @Override
+        public TopPojo build() {
+            try {
+                TopPojo record = new TopPojo();
+                record.Id = fieldSetFlags()[0] ? this.Id : (java.lang.Integer) defaultValue(fields()[0]);
+                record.State = fieldSetFlags()[1] ? this.State : (java.lang.CharSequence) defaultValue(fields()[1]);
+                record.Things = fieldSetFlags()[2] ? this.Things
+                        : (java.util.List<cascading.avro.pojo.EmbeddedPojo>) defaultValue(fields()[2]);
+                return record;
+            } catch (Exception e) {
+                throw new org.apache.avro.AvroRuntimeException(e);
+            }
+        }
+    }
 }

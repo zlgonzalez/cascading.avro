@@ -1,16 +1,16 @@
 /*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 package cascading.avro;
 
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.avro.Schema;
 import org.apache.avro.Schema.Field;
@@ -41,10 +40,10 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.PathFilter;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Writable;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.InputFormat;
+import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.OutputFormat;
+import org.apache.hadoop.mapred.RecordReader;
 
 import cascading.avro.serialization.AvroSpecificRecordSerialization;
 import cascading.flow.FlowProcess;
@@ -56,7 +55,6 @@ import cascading.tap.Tap;
 import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
-
 
 @SuppressWarnings("rawtypes")
 public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollector, Object[], Object[]> {
@@ -71,32 +69,40 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
     Schema schema;
 
     /**
-     * Constructor to read from an Avro source or write to an Avro sink without specifying the schema. If using as a sink,
-     * the sink Fields must have type information and currently Map and List are not supported.
+     * Constructor to read from an Avro source or write to an Avro sink without
+     * specifying the schema. If using as a sink, the sink Fields must have type
+     * information and currently Map and List are not supported.
      */
     public AvroScheme() {
         this(null);
     }
 
     /**
-     * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
-     * This is the legacy constructor format. A Fields object and the corresponding types must be provided.
+     * Create a new Cascading 2.0 scheme suitable for reading and writing data
+     * using the Avro serialization format. This is the legacy constructor
+     * format. A Fields object and the corresponding types must be provided.
      *
-     * @param fields Fields object from cascading
-     * @param types  array of Class types
+     * @param fields
+     *            Fields object from cascading
+     * @param types
+     *            array of Class types
      */
     public AvroScheme(Fields fields, Class<?>[] types) {
         this(CascadingToAvro.generateAvroSchemaFromFieldsAndTypes(DEFAULT_RECORD_NAME, fields, types));
     }
 
     /**
-     * Create a new Cascading 2.0 scheme suitable for reading and writing data using the Avro serialization format.
-     * Note that if schema is null, the Avro schema will be inferred from one of the source files (if this scheme
-     * is being used as a source). At the moment, we are unable to infer a schema for a sink (this will change soon with
-     * a new version of cascading though).
+     * Create a new Cascading 2.0 scheme suitable for reading and writing data
+     * using the Avro serialization format. Note that if schema is null, the
+     * Avro schema will be inferred from one of the source files (if this scheme
+     * is being used as a source). At the moment, we are unable to infer a
+     * schema for a sink (this will change soon with a new version of cascading
+     * though).
      *
-     * @param schema Avro schema, or null if this is to be inferred from source file. Note that a runtime exception will happen
-     *               if the AvroScheme is used as a sink and no schema is supplied.
+     * @param schema
+     *            Avro schema, or null if this is to be inferred from source
+     *            file. Note that a runtime exception will happen if the
+     *            AvroScheme is used as a sink and no schema is supplied.
      */
     public AvroScheme(Schema schema) {
         this.schema = schema;
@@ -107,8 +113,7 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         } else {
             Fields cascadingFields = new Fields();
             for (Field avroField : schema.getFields()) {
-                cascadingFields = cascadingFields.append(
-                        new Fields(avroField.name()));
+                cascadingFields = cascadingFields.append(new Fields(avroField.name()));
             }
             setSinkFields(cascadingFields);
             setSourceFields(cascadingFields);
@@ -118,7 +123,8 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
     /**
      * Helper method to read in a schema when de-serializing the object
      *
-     * @param in The ObjectInputStream containing the serialized object
+     * @param in
+     *            The ObjectInputStream containing the serialized object
      * @return Schema The parsed schema.
      */
     protected static Schema readSchema(java.io.ObjectInputStream in) throws IOException {
@@ -144,27 +150,35 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
     }
 
     /**
-     * Sink prepare method called by cascading once on each reducer. This method stuffs the schema into a context
-     * for easy access by the sink method.
+     * Sink prepare method called by cascading once on each reducer. This method
+     * stuffs the schema into a context for easy access by the sink method.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param sinkCall
+     *            The cascading SinkCall object. Should be passed in by
+     *            cascading automatically.
      * @throws IOException
      */
-    public void sinkPrepare(
-            FlowProcess<? extends Configuration> flowProcess,
-            SinkCall<Object[], OutputCollector> sinkCall)
-            throws IOException {
-        sinkCall.setContext(new Object[]{schema});
+    public void sinkPrepare(FlowProcess<? extends Configuration> flowProcess,
+            SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
+        sinkCall.setContext(new Object[] { schema });
 
     }
 
     /**
-     * This method is called by cascading to set up the incoming fields. If a schema isn't present then it will
-     * go and peek at the input data to retrieve one. The field names from the schema are used to name the cascading fields.
+     * This method is called by cascading to set up the incoming fields. If a
+     * schema isn't present then it will go and peek at the input data to
+     * retrieve one. The field names from the schema are used to name the
+     * cascading fields.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param tap
+     *            The cascading Tap object. Should be passed in by cascading
+     *            automatically.
      * @return Fields The source cascading fields.
      */
     public Fields retrieveSourceFields(FlowProcess<? extends Configuration> flowProcess, Tap tap) {
@@ -187,14 +201,18 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
     }
 
     /**
-     * This method peeks at the source data to get a schema when none has been provided.
+     * This method peeks at the source data to get a schema when none has been
+     * provided.
      *
-     * @param flowProcess The cascading FlowProcess object for this flow.
-     * @param tap         The cascading Tap object.
-     * @return Schema The schema of the peeked at data, or Schema.NULL if none exists.
+     * @param flowProcess
+     *            The cascading FlowProcess object for this flow.
+     * @param tap
+     *            The cascading Tap object.
+     * @return Schema The schema of the peeked at data, or Schema.NULL if none
+     *         exists.
      */
     @SuppressWarnings({ "deprecation", "unchecked" })
-	private Schema getSourceSchema(FlowProcess<? extends Configuration> flowProcess, Tap tap) throws IOException {
+    private Schema getSourceSchema(FlowProcess<? extends Configuration> flowProcess, Tap tap) throws IOException {
 
         if (tap instanceof CompositeTap) {
             tap = (Tap) ((CompositeTap) tap).getChildTaps().next();
@@ -251,54 +269,57 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         conf.setStrings("io.serializations", serializations.toArray(new String[serializations.size()]));
     }
 
-    private void writeObject(java.io.ObjectOutputStream out)
-            throws IOException {
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         out.writeObject(this.schema.toString());
     }
 
-    private void readObject(java.io.ObjectInputStream in)
-            throws IOException {
+    private void readObject(java.io.ObjectInputStream in) throws IOException {
         this.schema = readSchema(in);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        if (!super.equals(o))
+            return false;
 
         AvroScheme that = (AvroScheme) o;
 
-        if (schema != null ? !schema.equals(that.schema) : that.schema != null) return false;
+        if (schema != null ? !schema.equals(that.schema) : that.schema != null)
+            return false;
 
         return true;
     }
 
     @Override
     public String toString() {
-        return "AvroScheme{" +
-                "schema=" + schema +
-                '}';
+        return "AvroScheme{" + "schema=" + schema + '}';
     }
 
     @Override
     public int hashCode() {
 
-        return 31 * getSinkFields().hashCode() +
-                (schema == null ? 0 : schema.hashCode());
+        return 31 * getSinkFields().hashCode() + (schema == null ? 0 : schema.hashCode());
     }
 
     /**
      * Sink method to take an outgoing tuple and write it to Avro.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param sinkCall    The cascading SinkCall object. Should be passed in by cascading automatically.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param sinkCall
+     *            The cascading SinkCall object. Should be passed in by
+     *            cascading automatically.
      * @throws IOException
      */
-	@SuppressWarnings({ "unchecked" })
-	@Override
-	public void sink(FlowProcess<? extends Configuration> flowProcess,
-			SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
+    @SuppressWarnings({ "unchecked" })
+    @Override
+    public void sink(FlowProcess<? extends Configuration> flowProcess, SinkCall<Object[], OutputCollector> sinkCall)
+            throws IOException {
         TupleEntry tupleEntry = sinkCall.getOutgoingEntry();
 
         IndexedRecord record = new Record((Schema) sinkCall.getContext()[0]);
@@ -306,26 +327,33 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         for (int i = 0; i < objectArray.length; i++) {
             record.put(i, objectArray[i]);
         }
-        //noinspection unchecked
+        // noinspection unchecked
         sinkCall.getOutput().collect(new AvroWrapper<IndexedRecord>(record), NullWritable.get());
 
-	}
+    }
 
     /**
-     * sinkConfInit is called by cascading to set up the sinks. This happens on the client side before the
-     * job is distributed.
-     * There is a check for the presence of a schema and an exception is thrown if none has been provided.
-     * After the schema check the conf object is given the options that Avro needs.
+     * sinkConfInit is called by cascading to set up the sinks. This happens on
+     * the client side before the job is distributed. There is a check for the
+     * presence of a schema and an exception is thrown if none has been
+     * provided. After the schema check the conf object is given the options
+     * that Avro needs.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
-     * @param conf        The Hadoop JobConf object. This is passed in by cascading automatically.
-     * @throws RuntimeException If no schema is present this halts the entire process.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param tap
+     *            The cascading Tap object. Should be passed in by cascading
+     *            automatically.
+     * @param conf
+     *            The Hadoop JobConf object. This is passed in by cascading
+     *            automatically.
+     * @throws RuntimeException
+     *             If no schema is present this halts the entire process.
      */
-	@Override
-	public void sinkConfInit(FlowProcess<? extends Configuration> flowProcess,
-			Tap<Configuration, RecordReader, OutputCollector> tap,
-			Configuration conf) {
+    @Override
+    public void sinkConfInit(FlowProcess<? extends Configuration> flowProcess,
+            Tap<Configuration, RecordReader, OutputCollector> tap, Configuration conf) {
         if (schema == null) {
             throw new RuntimeException("Must provide sink schema");
         }
@@ -334,23 +362,28 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         conf.setClass("mapred.output.format.class", AvroOutputFormat.class, OutputFormat.class);
         conf.setBoolean("mapred.mapper.new-api", false);
 
-
         // Add AvroSerialization to io.serializations
         addAvroSerializations(conf);
-	}
+    }
 
     /**
      * Source method to take an incoming Avro record and make it a Tuple.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param sourceCall  The cascading SourceCall object. Should be passed in by cascading automatically.
-     * @return boolean true on successful parsing and collection, false on failure.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param sourceCall
+     *            The cascading SourceCall object. Should be passed in by
+     *            cascading automatically.
+     * @return boolean true on successful parsing and collection, false on
+     *         failure.
      * @throws IOException
      */
-	@Override
-	public boolean source(FlowProcess<? extends Configuration> flowProcess,
-			SourceCall<Object[], RecordReader> sourceCall) throws IOException {
-        @SuppressWarnings("unchecked") RecordReader<AvroWrapper<IndexedRecord>, Writable> input = sourceCall.getInput();
+    @Override
+    public boolean source(FlowProcess<? extends Configuration> flowProcess,
+            SourceCall<Object[], RecordReader> sourceCall) throws IOException {
+        @SuppressWarnings("unchecked")
+        RecordReader<AvroWrapper<IndexedRecord>, Writable> input = sourceCall.getInput();
         AvroWrapper<IndexedRecord> wrapper = input.createKey();
         if (!input.next(wrapper, input.createValue())) {
             return false;
@@ -363,23 +396,30 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
         tuple.addAll(split);
 
         return true;
-	}
+    }
 
     /**
-     * sourceConfInit is called by cascading to set up the sources. This happens on the client side before the
-     * job is distributed.
-     * There is a check for the presence of a schema and if none has been provided the data is peeked at to get a schema.
-     * After the schema check the conf object is given the options that Avro needs.
+     * sourceConfInit is called by cascading to set up the sources. This happens
+     * on the client side before the job is distributed. There is a check for
+     * the presence of a schema and if none has been provided the data is peeked
+     * at to get a schema. After the schema check the conf object is given the
+     * options that Avro needs.
      *
-     * @param flowProcess The cascading FlowProcess object. Should be passed in by cascading automatically.
-     * @param tap         The cascading Tap object. Should be passed in by cascading automatically.
-     * @param conf        The Hadoop JobConf object. This is passed in by cascading automatically.
-     * @throws RuntimeException If no schema is present this halts the entire process.
+     * @param flowProcess
+     *            The cascading FlowProcess object. Should be passed in by
+     *            cascading automatically.
+     * @param tap
+     *            The cascading Tap object. Should be passed in by cascading
+     *            automatically.
+     * @param conf
+     *            The Hadoop JobConf object. This is passed in by cascading
+     *            automatically.
+     * @throws RuntimeException
+     *             If no schema is present this halts the entire process.
      */
-	@Override
-	public void sourceConfInit(FlowProcess<? extends Configuration> flowProcess,
-			Tap<Configuration, RecordReader, OutputCollector> tap,
-			Configuration conf) {
+    @Override
+    public void sourceConfInit(FlowProcess<? extends Configuration> flowProcess,
+            Tap<Configuration, RecordReader, OutputCollector> tap, Configuration conf) {
         retrieveSourceFields(flowProcess, tap);
         // Set the input schema and input class
         conf.set(AvroJob.INPUT_SCHEMA, schema.toString());
@@ -388,8 +428,6 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
 
         // Add AvroSerialization to io.serializations
         addAvroSerializations(conf);
-	}
-	
+    }
+
 }
-
-

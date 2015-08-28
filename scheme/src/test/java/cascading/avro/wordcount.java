@@ -3,183 +3,212 @@
  * 
  * DO NOT EDIT DIRECTLY
  */
-package cascading.avro;  
+package cascading.avro;
+
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class wordcount extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"wordcount\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"token\",\"type\":\"string\"},{\"name\":\"count\",\"type\":\"long\"}]}");
-  public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
-  @Deprecated public java.lang.CharSequence token;
-  @Deprecated public long count;
+public class wordcount extends org.apache.avro.specific.SpecificRecordBase implements
+        org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
+            .parse("{\"type\":\"record\",\"name\":\"wordcount\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"token\",\"type\":\"string\"},{\"name\":\"count\",\"type\":\"long\"}]}");
 
-  /**
-   * Default constructor.
-   */
-  public wordcount() {}
-
-  /**
-   * All-args constructor.
-   */
-  public wordcount(java.lang.CharSequence token, java.lang.Long count) {
-    this.token = token;
-    this.count = count;
-  }
-
-  public org.apache.avro.Schema getSchema() { return SCHEMA$; }
-  // Used by DatumWriter.  Applications should not call. 
-  public java.lang.Object get(int field$) {
-    switch (field$) {
-    case 0: return token;
-    case 1: return count;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-  // Used by DatumReader.  Applications should not call. 
-  @SuppressWarnings(value="unchecked")
-  public void put(int field$, java.lang.Object value$) {
-    switch (field$) {
-    case 0: token = (java.lang.CharSequence)value$; break;
-    case 1: count = (java.lang.Long)value$; break;
-    default: throw new org.apache.avro.AvroRuntimeException("Bad index");
-    }
-  }
-
-  /**
-   * Gets the value of the 'token' field.
-   */
-  public java.lang.CharSequence getToken() {
-    return token;
-  }
-
-  /**
-   * Sets the value of the 'token' field.
-   * @param value the value to set.
-   */
-  public void setToken(java.lang.CharSequence value) {
-    this.token = value;
-  }
-
-  /**
-   * Gets the value of the 'count' field.
-   */
-  public java.lang.Long getCount() {
-    return count;
-  }
-
-  /**
-   * Sets the value of the 'count' field.
-   * @param value the value to set.
-   */
-  public void setCount(java.lang.Long value) {
-    this.count = value;
-  }
-
-  /** Creates a new wordcount RecordBuilder */
-  public static cascading.avro.wordcount.Builder newBuilder() {
-    return new cascading.avro.wordcount.Builder();
-  }
-  
-  /** Creates a new wordcount RecordBuilder by copying an existing Builder */
-  public static cascading.avro.wordcount.Builder newBuilder(cascading.avro.wordcount.Builder other) {
-    return new cascading.avro.wordcount.Builder(other);
-  }
-  
-  /** Creates a new wordcount RecordBuilder by copying an existing wordcount instance */
-  public static cascading.avro.wordcount.Builder newBuilder(cascading.avro.wordcount other) {
-    return new cascading.avro.wordcount.Builder(other);
-  }
-  
-  /**
-   * RecordBuilder for wordcount instances.
-   */
-  public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<wordcount>
-    implements org.apache.avro.data.RecordBuilder<wordcount> {
-
-    private java.lang.CharSequence token;
-    private long count;
-
-    /** Creates a new Builder */
-    private Builder() {
-      super(cascading.avro.wordcount.SCHEMA$);
-    }
-    
-    /** Creates a Builder by copying an existing Builder */
-    private Builder(cascading.avro.wordcount.Builder other) {
-      super(other);
-    }
-    
-    /** Creates a Builder by copying an existing wordcount instance */
-    private Builder(cascading.avro.wordcount other) {
-            super(cascading.avro.wordcount.SCHEMA$);
-      if (isValidValue(fields()[0], other.token)) {
-        this.token = data().deepCopy(fields()[0].schema(), other.token);
-        fieldSetFlags()[0] = true;
-      }
-      if (isValidValue(fields()[1], other.count)) {
-        this.count = data().deepCopy(fields()[1].schema(), other.count);
-        fieldSetFlags()[1] = true;
-      }
+    public static org.apache.avro.Schema getClassSchema() {
+        return SCHEMA$;
     }
 
-    /** Gets the value of the 'token' field */
+    @Deprecated
+    public java.lang.CharSequence token;
+    @Deprecated
+    public long count;
+
+    /**
+     * Default constructor.
+     */
+    public wordcount() {
+    }
+
+    /**
+     * All-args constructor.
+     */
+    public wordcount(java.lang.CharSequence token, java.lang.Long count) {
+        this.token = token;
+        this.count = count;
+    }
+
+    public org.apache.avro.Schema getSchema() {
+        return SCHEMA$;
+    }
+
+    // Used by DatumWriter. Applications should not call.
+    public java.lang.Object get(int field$) {
+        switch (field$) {
+        case 0:
+            return token;
+        case 1:
+            return count;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    // Used by DatumReader. Applications should not call.
+    @SuppressWarnings(value = "unchecked")
+    public void put(int field$, java.lang.Object value$) {
+        switch (field$) {
+        case 0:
+            token = (java.lang.CharSequence) value$;
+            break;
+        case 1:
+            count = (java.lang.Long) value$;
+            break;
+        default:
+            throw new org.apache.avro.AvroRuntimeException("Bad index");
+        }
+    }
+
+    /**
+     * Gets the value of the 'token' field.
+     */
     public java.lang.CharSequence getToken() {
-      return token;
-    }
-    
-    /** Sets the value of the 'token' field */
-    public cascading.avro.wordcount.Builder setToken(java.lang.CharSequence value) {
-      validate(fields()[0], value);
-      this.token = value;
-      fieldSetFlags()[0] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'token' field has been set */
-    public boolean hasToken() {
-      return fieldSetFlags()[0];
-    }
-    
-    /** Clears the value of the 'token' field */
-    public cascading.avro.wordcount.Builder clearToken() {
-      token = null;
-      fieldSetFlags()[0] = false;
-      return this;
+        return token;
     }
 
-    /** Gets the value of the 'count' field */
+    /**
+     * Sets the value of the 'token' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setToken(java.lang.CharSequence value) {
+        this.token = value;
+    }
+
+    /**
+     * Gets the value of the 'count' field.
+     */
     public java.lang.Long getCount() {
-      return count;
-    }
-    
-    /** Sets the value of the 'count' field */
-    public cascading.avro.wordcount.Builder setCount(long value) {
-      validate(fields()[1], value);
-      this.count = value;
-      fieldSetFlags()[1] = true;
-      return this; 
-    }
-    
-    /** Checks whether the 'count' field has been set */
-    public boolean hasCount() {
-      return fieldSetFlags()[1];
-    }
-    
-    /** Clears the value of the 'count' field */
-    public cascading.avro.wordcount.Builder clearCount() {
-      fieldSetFlags()[1] = false;
-      return this;
+        return count;
     }
 
-    @Override
-    public wordcount build() {
-      try {
-        wordcount record = new wordcount();
-        record.token = fieldSetFlags()[0] ? this.token : (java.lang.CharSequence) defaultValue(fields()[0]);
-        record.count = fieldSetFlags()[1] ? this.count : (java.lang.Long) defaultValue(fields()[1]);
-        return record;
-      } catch (Exception e) {
-        throw new org.apache.avro.AvroRuntimeException(e);
-      }
+    /**
+     * Sets the value of the 'count' field.
+     * 
+     * @param value
+     *            the value to set.
+     */
+    public void setCount(java.lang.Long value) {
+        this.count = value;
     }
-  }
+
+    /** Creates a new wordcount RecordBuilder */
+    public static cascading.avro.wordcount.Builder newBuilder() {
+        return new cascading.avro.wordcount.Builder();
+    }
+
+    /** Creates a new wordcount RecordBuilder by copying an existing Builder */
+    public static cascading.avro.wordcount.Builder newBuilder(cascading.avro.wordcount.Builder other) {
+        return new cascading.avro.wordcount.Builder(other);
+    }
+
+    /**
+     * Creates a new wordcount RecordBuilder by copying an existing wordcount
+     * instance
+     */
+    public static cascading.avro.wordcount.Builder newBuilder(cascading.avro.wordcount other) {
+        return new cascading.avro.wordcount.Builder(other);
+    }
+
+    /**
+     * RecordBuilder for wordcount instances.
+     */
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<wordcount> implements
+            org.apache.avro.data.RecordBuilder<wordcount> {
+
+        private java.lang.CharSequence token;
+        private long count;
+
+        /** Creates a new Builder */
+        private Builder() {
+            super(cascading.avro.wordcount.SCHEMA$);
+        }
+
+        /** Creates a Builder by copying an existing Builder */
+        private Builder(cascading.avro.wordcount.Builder other) {
+            super(other);
+        }
+
+        /** Creates a Builder by copying an existing wordcount instance */
+        private Builder(cascading.avro.wordcount other) {
+            super(cascading.avro.wordcount.SCHEMA$);
+            if (isValidValue(fields()[0], other.token)) {
+                this.token = data().deepCopy(fields()[0].schema(), other.token);
+                fieldSetFlags()[0] = true;
+            }
+            if (isValidValue(fields()[1], other.count)) {
+                this.count = data().deepCopy(fields()[1].schema(), other.count);
+                fieldSetFlags()[1] = true;
+            }
+        }
+
+        /** Gets the value of the 'token' field */
+        public java.lang.CharSequence getToken() {
+            return token;
+        }
+
+        /** Sets the value of the 'token' field */
+        public cascading.avro.wordcount.Builder setToken(java.lang.CharSequence value) {
+            validate(fields()[0], value);
+            this.token = value;
+            fieldSetFlags()[0] = true;
+            return this;
+        }
+
+        /** Checks whether the 'token' field has been set */
+        public boolean hasToken() {
+            return fieldSetFlags()[0];
+        }
+
+        /** Clears the value of the 'token' field */
+        public cascading.avro.wordcount.Builder clearToken() {
+            token = null;
+            fieldSetFlags()[0] = false;
+            return this;
+        }
+
+        /** Gets the value of the 'count' field */
+        public java.lang.Long getCount() {
+            return count;
+        }
+
+        /** Sets the value of the 'count' field */
+        public cascading.avro.wordcount.Builder setCount(long value) {
+            validate(fields()[1], value);
+            this.count = value;
+            fieldSetFlags()[1] = true;
+            return this;
+        }
+
+        /** Checks whether the 'count' field has been set */
+        public boolean hasCount() {
+            return fieldSetFlags()[1];
+        }
+
+        /** Clears the value of the 'count' field */
+        public cascading.avro.wordcount.Builder clearCount() {
+            fieldSetFlags()[1] = false;
+            return this;
+        }
+
+        @Override
+        public wordcount build() {
+            try {
+                wordcount record = new wordcount();
+                record.token = fieldSetFlags()[0] ? this.token : (java.lang.CharSequence) defaultValue(fields()[0]);
+                record.count = fieldSetFlags()[1] ? this.count : (java.lang.Long) defaultValue(fields()[1]);
+                return record;
+            } catch (Exception e) {
+                throw new org.apache.avro.AvroRuntimeException(e);
+            }
+        }
+    }
 }

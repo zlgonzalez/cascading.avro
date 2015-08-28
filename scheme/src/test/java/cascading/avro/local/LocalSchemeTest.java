@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 public class LocalSchemeTest extends Assert {
 
     @Rule
@@ -42,12 +41,10 @@ public class LocalSchemeTest extends Assert {
     @Test
     public void testRoundTrip() throws Exception {
 
-        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
-                "../test1.avsc"));
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("../test1.avsc"));
 
-        final Fields fields = new Fields("aBoolean", "anInt", "aLong",
-                "aDouble", "aFloat", "aBytes", "aFixed", "aNull", "aString",
-                "aList", "aMap", "aUnion");
+        final Fields fields = new Fields("aBoolean", "anInt", "aLong", "aDouble", "aFloat", "aBytes", "aFixed",
+                "aNull", "aString", "aList", "aMap", "aUnion");
 
         String output = tempDir.getRoot().toString() + "/testRoundTrip/output";
         String input = tempDir.getRoot().toString() + "/testRoundTrip/input";
@@ -61,18 +58,16 @@ public class LocalSchemeTest extends Assert {
 
         aList.add(0);
         aList.add(1);
-        BytesWritable bytesWritable = new BytesWritable(new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16});
-        BytesWritable bytesWritable2 = new BytesWritable(new byte[]{1,
-                2, 3});
-        Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2,
-                bytesWritable, null, "test-string", aList, aMap, 5);
+        BytesWritable bytesWritable = new BytesWritable(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
+                16 });
+        BytesWritable bytesWritable2 = new BytesWritable(new byte[] { 1, 2, 3 });
+        Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2, bytesWritable, null, "test-string", aList,
+                aMap, 5);
         write.add(new TupleEntry(fields, tuple));
-        write.add(new TupleEntry(fields, new Tuple(false, 1, 2L,
-                3.0, 4.0F, new BytesWritable(new byte[0]), new BytesWritable(
-                new byte[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4,
-                        5, 6}), null, "other string", aList, aMap, null)));
+        write.add(new TupleEntry(fields, new Tuple(false, 1, 2L, 3.0, 4.0F, new BytesWritable(new byte[0]),
+                new BytesWritable(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6 }), null, "other string",
+                aList, aMap, null)));
         write.close();
-
 
         Pipe writePipe = new Pipe("tuples to avro");
 
@@ -82,7 +77,6 @@ public class LocalSchemeTest extends Assert {
 
         // Now read it back in, and verify that the data/types match up.
         Tap avroSource = new FileTap(new cascading.avro.local.AvroScheme(schema), output);
-
 
         TupleEntryIterator iterator = avroSource.openForRead(new LocalFlowProcess());
 
@@ -97,10 +91,8 @@ public class LocalSchemeTest extends Assert {
         assertEquals(bytesWritable2, readEntry1.getObject(5));
         assertEquals(bytesWritable, readEntry1.getObject(6));
         assertEquals("test-string", readEntry1.getString(8));
-        assertEquals("0", ((List) readEntry1.getObject(9)).get(0)
-                .toString());
-        assertEquals(1,
-                ((Map) readEntry1.getObject(10)).get("one"));
+        assertEquals("0", ((List) readEntry1.getObject(9)).get(0).toString());
+        assertEquals(1, ((Map) readEntry1.getObject(10)).get("one"));
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry2 = iterator.next();
 
@@ -123,7 +115,8 @@ public class LocalSchemeTest extends Assert {
         Tap docTap = new FileTap(new TextLine(new Fields("text")), docPath);
         Tap wcTap = new FileTap(new cascading.avro.local.AvroScheme(schema), wcPath);
 
-        // specify a regex operation to split the "document" text lines into a token stream
+        // specify a regex operation to split the "document" text lines into a
+        // token stream
         Fields token = new Fields("token");
         Fields text = new Fields("text");
         RegexSplitGenerator splitter = new RegexSplitGenerator(token, "[ \\[\\]\\(\\),.]");
@@ -136,10 +129,7 @@ public class LocalSchemeTest extends Assert {
         wcPipe = new Every(wcPipe, Fields.ALL, new Count(), Fields.ALL);
 
         // connect the taps, pipes, etc., into a flow
-        FlowDef flowDef = FlowDef.flowDef()
-                .setName("wc")
-                .addSource(docPipe, docTap)
-                .addTailSink(wcPipe, wcTap);
+        FlowDef flowDef = FlowDef.flowDef().setName("wc").addSource(docPipe, docTap).addTailSink(wcPipe, wcTap);
 
         Flow wcFlow = flowConnector.connect(flowDef);
         wcFlow.complete();
@@ -154,11 +144,8 @@ public class LocalSchemeTest extends Assert {
         avroPipe = new GroupBy(avroPipe, new Fields("count"));
         avroPipe = new Every(avroPipe, Fields.ALL, new Count(new Fields("countcount")), Fields.ALL);
 
-
         // connect the taps, pipes, etc., into a flow
-        FlowDef flowDef2 = FlowDef.flowDef()
-                .setName("wc-read")
-                .addSource(avroPipe, avroTap)
+        FlowDef flowDef2 = FlowDef.flowDef().setName("wc-read").addSource(avroPipe, avroTap)
                 .addTailSink(avroPipe, finalTap);
 
         // write a DOT file and run the flow
@@ -179,11 +166,11 @@ public class LocalSchemeTest extends Assert {
 
     @Test
     public void notUnpackedTest() throws Exception {
-        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream(
-                "../test2.avsc"));
+        final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("../test2.avsc"));
         String in = tempDir.getRoot().toString() + "/recordtest/in";
         String out = tempDir.getRoot().toString() + "/recordtest/out";
-        Tap lfsSource = new FileTap(new cascading.avro.local.PackedAvroScheme<GenericData.Record>(schema), in, SinkMode.REPLACE);
+        Tap lfsSource = new FileTap(new cascading.avro.local.PackedAvroScheme<GenericData.Record>(schema), in,
+                SinkMode.REPLACE);
         TupleEntryCollector write = lfsSource.openForWrite(new LocalFlowProcess());
         Tuple tuple = Tuple.size(1);
         GenericData.Record record = new GenericData.Record(schema);
@@ -198,7 +185,6 @@ public class LocalSchemeTest extends Assert {
         write.add(te);
         write.close();
 
-
         Pipe writePipe = new Pipe("tuples to avro");
 
         Tap avroSink = new FileTap(new cascading.avro.local.PackedAvroScheme<GenericData.Record>(schema), out);
@@ -208,18 +194,18 @@ public class LocalSchemeTest extends Assert {
         // Now read it back in, and verify that the data/types match up.
         Tap avroSource = new FileTap(new cascading.avro.local.PackedAvroScheme<GenericData.Record>(schema), out);
 
-
         TupleEntryIterator iterator = avroSource.openForRead(new LocalFlowProcess());
 
         assertTrue(iterator.hasNext());
         final TupleEntry readEntry1 = iterator.next();
 
         assertTrue(readEntry1.getObject(0) instanceof IndexedRecord);
-        assertEquals(((IndexedRecord) record.get(0)).get(0), ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(0));
-        assertEquals(new Utf8((String) ((IndexedRecord) record.get(0)).get(1)), ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(1));
+        assertEquals(((IndexedRecord) record.get(0)).get(0),
+                ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(0));
+        assertEquals(new Utf8((String) ((IndexedRecord) record.get(0)).get(1)),
+                ((IndexedRecord) ((IndexedRecord) readEntry1.getObject(0)).get(0)).get(1));
         assertEquals(new Utf8((String) record.get(1)), ((IndexedRecord) readEntry1.getObject(0)).get(1));
 
     }
-
 
 }
