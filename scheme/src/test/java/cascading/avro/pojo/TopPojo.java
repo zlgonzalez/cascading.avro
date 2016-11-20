@@ -7,10 +7,10 @@ package cascading.avro.pojo;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class TopPojo extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"TopPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Id\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"State\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"Things\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}}],\"default\":null}]}");
+public class TopPojo extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"TopPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Id\",\"type\":[\"null\",\"int\"],\"default\":null},{\"name\":\"State\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"Things\",\"type\":[\"null\",{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}}],\"default\":null}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -147,8 +147,8 @@ public class TopPojo extends org.apache.avro.specific.SpecificRecordBase impleme
     /**
      * RecordBuilder for TopPojo instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TopPojo> implements
-            org.apache.avro.data.RecordBuilder<TopPojo> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<TopPojo>
+            implements org.apache.avro.data.RecordBuilder<TopPojo> {
 
         private java.lang.Integer Id;
         private java.lang.CharSequence State;

@@ -7,10 +7,10 @@ package cascading.avro;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class wordcount extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"wordcount\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"token\",\"type\":\"string\"},{\"name\":\"count\",\"type\":\"long\"}]}");
+public class wordcount extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"wordcount\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"token\",\"type\":\"string\"},{\"name\":\"count\",\"type\":\"long\"}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -121,8 +121,8 @@ public class wordcount extends org.apache.avro.specific.SpecificRecordBase imple
     /**
      * RecordBuilder for wordcount instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<wordcount> implements
-            org.apache.avro.data.RecordBuilder<wordcount> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<wordcount>
+            implements org.apache.avro.data.RecordBuilder<wordcount> {
 
         private java.lang.CharSequence token;
         private long count;

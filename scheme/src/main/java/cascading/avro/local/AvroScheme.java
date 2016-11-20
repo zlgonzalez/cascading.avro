@@ -39,6 +39,7 @@ import cascading.tuple.TupleEntry;
  */
 public class AvroScheme extends Scheme<Properties, InputStream, OutputStream, DataFileStream, DataFileWriter> {
 
+    private static final long serialVersionUID = -128229787734043366L;
     private static final Logger LOG = LoggerFactory.getLogger(AvroScheme.class);
     private Encoder encoder;
     // private Decoder decoder;

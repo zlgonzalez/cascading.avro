@@ -7,10 +7,10 @@ package cascading.avro.trevni.specified;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class ElectricPowerUsage extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"ElectricPowerUsage\",\"namespace\":\"cascading.avro.trevni.specified\",\"fields\":[{\"name\":\"addressCode\",\"type\":\"string\"},{\"name\":\"devicePowerEventList\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"}]}}}]}");
+public class ElectricPowerUsage extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"ElectricPowerUsage\",\"namespace\":\"cascading.avro.trevni.specified\",\"fields\":[{\"name\":\"addressCode\",\"type\":\"string\"},{\"name\":\"devicePowerEventList\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"}]}}}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -143,7 +143,9 @@ public class ElectricPowerUsage extends org.apache.avro.specific.SpecificRecordB
             super(other);
         }
 
-        /** Creates a Builder by copying an existing ElectricPowerUsage instance */
+        /**
+         * Creates a Builder by copying an existing ElectricPowerUsage instance
+         */
         private Builder(cascading.avro.trevni.specified.ElectricPowerUsage other) {
             super(cascading.avro.trevni.specified.ElectricPowerUsage.SCHEMA$);
             if (isValidValue(fields()[0], other.addressCode)) {

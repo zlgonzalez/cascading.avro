@@ -7,10 +7,10 @@ package cascading.avro;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class nested extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"nested\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}");
+public class nested extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"nested\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -120,8 +120,8 @@ public class nested extends org.apache.avro.specific.SpecificRecordBase implemen
     /**
      * RecordBuilder for nested instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<nested> implements
-            org.apache.avro.data.RecordBuilder<nested> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<nested>
+            implements org.apache.avro.data.RecordBuilder<nested> {
 
         private int anInnerField1;
         private java.lang.CharSequence anInnerField2;

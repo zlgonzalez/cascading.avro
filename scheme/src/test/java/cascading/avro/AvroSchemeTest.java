@@ -72,8 +72,8 @@ public class AvroSchemeTest extends Assert {
     public void testRoundTrip() throws Exception {
         final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("test1.avsc"));
 
-        final Fields fields = new Fields("aBoolean", "anInt", "aLong", "aDouble", "aFloat", "aBytes", "aFixed",
-                "aNull", "aString", "aList", "aMap", "aUnion");
+        final Fields fields = new Fields("aBoolean", "anInt", "aLong", "aDouble", "aFloat", "aBytes", "aFixed", "aNull",
+                "aString", "aList", "aMap", "aUnion");
 
         String in = tempDir.getRoot().toString() + "/testRoundTrip/in";
         String out = tempDir.getRoot().toString() + "/testRoundTrip/out";
@@ -87,15 +87,16 @@ public class AvroSchemeTest extends Assert {
 
         aList.add(0);
         aList.add(1);
-        BytesWritable bytesWritable = new BytesWritable(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                16 });
+        BytesWritable bytesWritable = new BytesWritable(
+                new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 });
         BytesWritable bytesWritable2 = new BytesWritable(new byte[] { 1, 2, 3 });
         Tuple tuple = new Tuple(false, 1, 2L, 3.0, 4.0F, bytesWritable2, bytesWritable, null, "test-string", aList,
                 aMap, 5);
         write.add(new TupleEntry(fields, tuple));
-        write.add(new TupleEntry(fields, new Tuple(false, 1, 2L, 3.0, 4.0F, new BytesWritable(new byte[0]),
-                new BytesWritable(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6 }), null, "other string",
-                aList, aMap, null)));
+        write.add(new TupleEntry(fields,
+                new Tuple(false, 1, 2L, 3.0, 4.0F, new BytesWritable(new byte[0]),
+                        new BytesWritable(new byte[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 1, 2, 3, 4, 5, 6 }), null,
+                        "other string", aList, aMap, null)));
         write.close();
 
         Pipe writePipe = new Pipe("tuples to avro");
@@ -643,9 +644,9 @@ public class AvroSchemeTest extends Assert {
                 "{\"type\":\"enum\",\"name\":\"%s\",\"namespace\":\"%s\",\"symbols\":[\"ONE\",\"TWO\"]}", "TestEnum",
                 TestEnum.class.getPackage().getName());
 
-        String expected = String
-                .format("{\"type\":\"record\",\"name\":\"CascadingAvroRecord\",\"doc\":\"auto generated\",\"fields\":[{\"name\":\"a\",\"type\":[\"null\",%s],\"doc\":\"\"}]}",
-                        enumField);
+        String expected = String.format(
+                "{\"type\":\"record\",\"name\":\"CascadingAvroRecord\",\"doc\":\"auto generated\",\"fields\":[{\"name\":\"a\",\"type\":[\"null\",%s],\"doc\":\"\"}]}",
+                enumField);
         assertEquals(expected, jsonSchema);
     }
 
@@ -694,8 +695,8 @@ public class AvroSchemeTest extends Assert {
         avroPipe = new Every(avroPipe, Fields.ALL, new Count(new Fields("countcount")), Fields.ALL);
 
         // connect the taps, pipes, etc., into a flow
-        FlowDef flowDef2 = FlowDef.flowDef().setName("wc-read").addSource(avroPipe, avroTap)
-                .addTailSink(avroPipe, finalTap);
+        FlowDef flowDef2 = FlowDef.flowDef().setName("wc-read").addSource(avroPipe, avroTap).addTailSink(avroPipe,
+                finalTap);
 
         // write a DOT file and run the flow
         Flow wcFlow2 = flowConnector2.connect(flowDef2);

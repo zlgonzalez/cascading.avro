@@ -7,10 +7,10 @@ package cascading.avro.trevni.specified;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"namespace\":\"cascading.avro.trevni.specified\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"}]}");
+public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"namespace\":\"cascading.avro.trevni.specified\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -101,8 +101,8 @@ public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBas
     /**
      * RecordBuilder for DevicePowerEvent instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<DevicePowerEvent> implements
-            org.apache.avro.data.RecordBuilder<DevicePowerEvent> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<DevicePowerEvent>
+            implements org.apache.avro.data.RecordBuilder<DevicePowerEvent> {
 
         private double power;
 
@@ -116,7 +116,9 @@ public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBas
             super(other);
         }
 
-        /** Creates a Builder by copying an existing DevicePowerEvent instance */
+        /**
+         * Creates a Builder by copying an existing DevicePowerEvent instance
+         */
         private Builder(cascading.avro.trevni.specified.DevicePowerEvent other) {
             super(cascading.avro.trevni.specified.DevicePowerEvent.SCHEMA$);
             if (isValidValue(fields()[0], other.power)) {

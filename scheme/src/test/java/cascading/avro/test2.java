@@ -7,10 +7,10 @@ package cascading.avro;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class test2 extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"test2\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"innerRec\",\"type\":{\"type\":\"record\",\"name\":\"nested\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}},{\"name\":\"outerField\",\"type\":\"string\"}]}");
+public class test2 extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"test2\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"innerRec\",\"type\":{\"type\":\"record\",\"name\":\"nested\",\"fields\":[{\"name\":\"anInnerField1\",\"type\":\"int\"},{\"name\":\"anInnerField2\",\"type\":\"string\"}]}},{\"name\":\"outerField\",\"type\":\"string\"}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -110,7 +110,9 @@ public class test2 extends org.apache.avro.specific.SpecificRecordBase implement
         return new cascading.avro.test2.Builder(other);
     }
 
-    /** Creates a new test2 RecordBuilder by copying an existing test2 instance */
+    /**
+     * Creates a new test2 RecordBuilder by copying an existing test2 instance
+     */
     public static cascading.avro.test2.Builder newBuilder(cascading.avro.test2 other) {
         return new cascading.avro.test2.Builder(other);
     }
@@ -118,8 +120,8 @@ public class test2 extends org.apache.avro.specific.SpecificRecordBase implement
     /**
      * RecordBuilder for test2 instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test2> implements
-            org.apache.avro.data.RecordBuilder<test2> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test2>
+            implements org.apache.avro.data.RecordBuilder<test2> {
 
         private cascading.avro.nested innerRec;
         private java.lang.CharSequence outerField;

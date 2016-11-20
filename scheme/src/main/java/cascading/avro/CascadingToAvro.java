@@ -358,7 +358,8 @@ public class CascadingToAvro {
         // only primitive types are allowed for arrays
 
         return (arrayType == Boolean.class || arrayType == Integer.class || arrayType == Long.class
-                || arrayType == Float.class || arrayType == Double.class || arrayType == String.class || arrayType == BytesWritable.class);
+                || arrayType == Float.class || arrayType == Double.class || arrayType == String.class
+                || arrayType == BytesWritable.class);
     }
 
     private static Schema generateSchema(String recordName, Fields schemeFields, Class<?>[] schemeTypes, int depth) {

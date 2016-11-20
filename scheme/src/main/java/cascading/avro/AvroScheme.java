@@ -161,6 +161,7 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
      *            cascading automatically.
      * @throws IOException
      */
+    @Override
     public void sinkPrepare(FlowProcess<? extends Configuration> flowProcess,
             SinkCall<Object[], OutputCollector> sinkCall) throws IOException {
         sinkCall.setContext(new Object[] { schema });
@@ -181,6 +182,7 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
      *            automatically.
      * @return Fields The source cascading fields.
      */
+    @Override
     public Fields retrieveSourceFields(FlowProcess<? extends Configuration> flowProcess, Tap tap) {
         if (schema == null) {
             try {
@@ -301,7 +303,6 @@ public class AvroScheme extends Scheme<Configuration, RecordReader, OutputCollec
 
     @Override
     public int hashCode() {
-
         return 31 * getSinkFields().hashCode() + (schema == null ? 0 : schema.hashCode());
     }
 

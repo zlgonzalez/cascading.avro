@@ -7,10 +7,10 @@ package cascading.avro.trevni;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"namespace\":\"cascading.avro.trevni\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"},{\"name\":\"deviceType\",\"type\":\"int\"},{\"name\":\"deviceId\",\"type\":\"int\"},{\"name\":\"status\",\"type\":\"int\"}]}");
+public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"DevicePowerEvent\",\"namespace\":\"cascading.avro.trevni\",\"fields\":[{\"name\":\"power\",\"type\":\"double\"},{\"name\":\"deviceType\",\"type\":\"int\"},{\"name\":\"deviceId\",\"type\":\"int\"},{\"name\":\"status\",\"type\":\"int\"}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -169,15 +169,16 @@ public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBas
      * Creates a new DevicePowerEvent RecordBuilder by copying an existing
      * DevicePowerEvent instance
      */
-    public static cascading.avro.trevni.DevicePowerEvent.Builder newBuilder(cascading.avro.trevni.DevicePowerEvent other) {
+    public static cascading.avro.trevni.DevicePowerEvent.Builder newBuilder(
+            cascading.avro.trevni.DevicePowerEvent other) {
         return new cascading.avro.trevni.DevicePowerEvent.Builder(other);
     }
 
     /**
      * RecordBuilder for DevicePowerEvent instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<DevicePowerEvent> implements
-            org.apache.avro.data.RecordBuilder<DevicePowerEvent> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<DevicePowerEvent>
+            implements org.apache.avro.data.RecordBuilder<DevicePowerEvent> {
 
         private double power;
         private int deviceType;
@@ -194,7 +195,9 @@ public class DevicePowerEvent extends org.apache.avro.specific.SpecificRecordBas
             super(other);
         }
 
-        /** Creates a Builder by copying an existing DevicePowerEvent instance */
+        /**
+         * Creates a Builder by copying an existing DevicePowerEvent instance
+         */
         private Builder(cascading.avro.trevni.DevicePowerEvent other) {
             super(cascading.avro.trevni.DevicePowerEvent.SCHEMA$);
             if (isValidValue(fields()[0], other.power)) {

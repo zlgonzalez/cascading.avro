@@ -13,8 +13,8 @@ import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 
-public class TopPojoAggregator extends BaseOperation<TopPojoAggregator.Context> implements
-        Aggregator<TopPojoAggregator.Context> {
+public class TopPojoAggregator extends BaseOperation<TopPojoAggregator.Context>
+        implements Aggregator<TopPojoAggregator.Context> {
 
     private static final long serialVersionUID = 4175186487288287022L;
 

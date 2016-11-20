@@ -167,8 +167,8 @@ public class PackedAvroSchemeCascadingTest {
 
         Tap<?, ?, ?> outTap = new FileTap(new TextLine(outputFields), jsonOutPath);
 
-        FlowDef flowDef = FlowDef.flowDef().setName("transform Avro to JSON").addSource(p, avroInTap)
-                .addTailSink(p, outTap);
+        FlowDef flowDef = FlowDef.flowDef().setName("transform Avro to JSON").addSource(p, avroInTap).addTailSink(p,
+                outTap);
 
         Flow<?> flow = flowConnector.connect(flowDef);
         flow.complete();
@@ -180,8 +180,10 @@ public class PackedAvroSchemeCascadingTest {
         BufferedReader br = new BufferedReader(new FileReader(outFile));
         String line1 = br.readLine();
         assertNotNull(line1);
-        assertTrue(Pattern.compile("\"Age\"\\s*:\\s*\"age1-1\",\\s*\"City\"\\s*:\\s*\"city1-1\"").matcher(line1).find());
-        assertTrue(Pattern.compile("\"Age\"\\s*:\\s*\"age1-2\",\\s*\"City\"\\s*:\\s*\"city1-2\"").matcher(line1).find());
+        assertTrue(
+                Pattern.compile("\"Age\"\\s*:\\s*\"age1-1\",\\s*\"City\"\\s*:\\s*\"city1-1\"").matcher(line1).find());
+        assertTrue(
+                Pattern.compile("\"Age\"\\s*:\\s*\"age1-2\",\\s*\"City\"\\s*:\\s*\"city1-2\"").matcher(line1).find());
         assertTrue(Pattern.compile("\"Id\":\\s*1,\\s*\"State\"\\s*:\\s*\"state1\"").matcher(line1).find());
 
         String line2 = br.readLine();

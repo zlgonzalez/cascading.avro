@@ -7,10 +7,10 @@ package com.maxpoint.cascading.avro;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class test4 extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"test4\",\"namespace\":\"com.maxpoint.cascading.avro\",\"fields\":[{\"name\":\"aListOfListOfInt\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"array\",\"items\":\"int\"}}},{\"name\":\"aListOfMapToLong\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"map\",\"values\":\"long\"}}}]}");
+public class test4 extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"test4\",\"namespace\":\"com.maxpoint.cascading.avro\",\"fields\":[{\"name\":\"aListOfListOfInt\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"array\",\"items\":\"int\"}}},{\"name\":\"aListOfMapToLong\",\"type\":{\"type\":\"array\",\"items\":{\"type\":\"map\",\"values\":\"long\"}}}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -107,11 +107,14 @@ public class test4 extends org.apache.avro.specific.SpecificRecordBase implement
     }
 
     /** Creates a new test4 RecordBuilder by copying an existing Builder */
-    public static com.maxpoint.cascading.avro.test4.Builder newBuilder(com.maxpoint.cascading.avro.test4.Builder other) {
+    public static com.maxpoint.cascading.avro.test4.Builder newBuilder(
+            com.maxpoint.cascading.avro.test4.Builder other) {
         return new com.maxpoint.cascading.avro.test4.Builder(other);
     }
 
-    /** Creates a new test4 RecordBuilder by copying an existing test4 instance */
+    /**
+     * Creates a new test4 RecordBuilder by copying an existing test4 instance
+     */
     public static com.maxpoint.cascading.avro.test4.Builder newBuilder(com.maxpoint.cascading.avro.test4 other) {
         return new com.maxpoint.cascading.avro.test4.Builder(other);
     }
@@ -119,8 +122,8 @@ public class test4 extends org.apache.avro.specific.SpecificRecordBase implement
     /**
      * RecordBuilder for test4 instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test4> implements
-            org.apache.avro.data.RecordBuilder<test4> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test4>
+            implements org.apache.avro.data.RecordBuilder<test4> {
 
         private java.util.List<java.util.List<java.lang.Integer>> aListOfListOfInt;
         private java.util.List<java.util.Map<java.lang.CharSequence, java.lang.Long>> aListOfMapToLong;
@@ -207,7 +210,8 @@ public class test4 extends org.apache.avro.specific.SpecificRecordBase implement
                 record.aListOfListOfInt = fieldSetFlags()[0] ? this.aListOfListOfInt
                         : (java.util.List<java.util.List<java.lang.Integer>>) defaultValue(fields()[0]);
                 record.aListOfMapToLong = fieldSetFlags()[1] ? this.aListOfMapToLong
-                        : (java.util.List<java.util.Map<java.lang.CharSequence, java.lang.Long>>) defaultValue(fields()[1]);
+                        : (java.util.List<java.util.Map<java.lang.CharSequence, java.lang.Long>>) defaultValue(
+                                fields()[1]);
                 return record;
             } catch (Exception e) {
                 throw new org.apache.avro.AvroRuntimeException(e);

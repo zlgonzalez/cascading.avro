@@ -7,10 +7,10 @@ package cascading.avro;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class test1 extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"test1\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"aBoolean\",\"type\":\"boolean\",\"default\":true},{\"name\":\"anInt\",\"type\":\"int\",\"default\":123},{\"name\":\"aLong\",\"type\":\"long\",\"default\":1},{\"name\":\"aDouble\",\"type\":\"double\",\"default\":110.1},{\"name\":\"aFloat\",\"type\":\"float\",\"default\":0.1},{\"name\":\"aBytes\",\"type\":\"bytes\"},{\"name\":\"aFixed\",\"type\":{\"type\":\"fixed\",\"name\":\"md5\",\"size\":16}},{\"name\":\"aNull\",\"type\":\"null\"},{\"name\":\"aString\",\"type\":[\"string\",\"null\"],\"default\":\"foobar\"},{\"name\":\"aList\",\"type\":{\"type\":\"array\",\"items\":\"int\"}},{\"name\":\"aMap\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"name\":\"aUnion\",\"type\":[\"null\",\"int\"]}]}");
+public class test1 extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"test1\",\"namespace\":\"cascading.avro\",\"fields\":[{\"name\":\"aBoolean\",\"type\":\"boolean\",\"default\":true},{\"name\":\"anInt\",\"type\":\"int\",\"default\":123},{\"name\":\"aLong\",\"type\":\"long\",\"default\":1},{\"name\":\"aDouble\",\"type\":\"double\",\"default\":110.1},{\"name\":\"aFloat\",\"type\":\"float\",\"default\":0.1},{\"name\":\"aBytes\",\"type\":\"bytes\"},{\"name\":\"aFixed\",\"type\":{\"type\":\"fixed\",\"name\":\"md5\",\"size\":16}},{\"name\":\"aNull\",\"type\":\"null\"},{\"name\":\"aString\",\"type\":[\"string\",\"null\"],\"default\":\"foobar\"},{\"name\":\"aList\",\"type\":{\"type\":\"array\",\"items\":\"int\"}},{\"name\":\"aMap\",\"type\":{\"type\":\"map\",\"values\":\"int\"}},{\"name\":\"aUnion\",\"type\":[\"null\",\"int\"]}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -363,7 +363,9 @@ public class test1 extends org.apache.avro.specific.SpecificRecordBase implement
         return new cascading.avro.test1.Builder(other);
     }
 
-    /** Creates a new test1 RecordBuilder by copying an existing test1 instance */
+    /**
+     * Creates a new test1 RecordBuilder by copying an existing test1 instance
+     */
     public static cascading.avro.test1.Builder newBuilder(cascading.avro.test1 other) {
         return new cascading.avro.test1.Builder(other);
     }
@@ -371,8 +373,8 @@ public class test1 extends org.apache.avro.specific.SpecificRecordBase implement
     /**
      * RecordBuilder for test1 instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test1> implements
-            org.apache.avro.data.RecordBuilder<test1> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<test1>
+            implements org.apache.avro.data.RecordBuilder<test1> {
 
         private boolean aBoolean;
         private int anInt;

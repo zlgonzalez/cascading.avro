@@ -52,8 +52,8 @@ public class TrevniSchemeTest extends Assert {
 
         final Schema schema = new Schema.Parser().parse(getClass().getResourceAsStream("electric-power-usage.avsc"));
 
-        final Schema specifiedColumnsSchema = new Schema.Parser().parse(getClass().getResourceAsStream(
-                "electric-power-usage2.avsc"));
+        final Schema specifiedColumnsSchema = new Schema.Parser()
+                .parse(getClass().getResourceAsStream("electric-power-usage2.avsc"));
 
         Configuration hadoopConf = new Configuration();
 

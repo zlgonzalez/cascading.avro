@@ -7,10 +7,10 @@ package cascading.avro.pojo;
 
 @SuppressWarnings("all")
 @org.apache.avro.specific.AvroGenerated
-public class EmbeddedPojo extends org.apache.avro.specific.SpecificRecordBase implements
-        org.apache.avro.specific.SpecificRecord {
-    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser()
-            .parse("{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
+public class EmbeddedPojo extends org.apache.avro.specific.SpecificRecordBase
+        implements org.apache.avro.specific.SpecificRecord {
+    public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse(
+            "{\"type\":\"record\",\"name\":\"EmbeddedPojo\",\"namespace\":\"cascading.avro.pojo\",\"fields\":[{\"name\":\"Age\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"City\",\"type\":[\"null\",\"string\"],\"default\":null},{\"name\":\"LastName\",\"type\":[\"null\",\"string\"],\"default\":null}]}");
 
     public static org.apache.avro.Schema getClassSchema() {
         return SCHEMA$;
@@ -130,7 +130,9 @@ public class EmbeddedPojo extends org.apache.avro.specific.SpecificRecordBase im
         return new cascading.avro.pojo.EmbeddedPojo.Builder();
     }
 
-    /** Creates a new EmbeddedPojo RecordBuilder by copying an existing Builder */
+    /**
+     * Creates a new EmbeddedPojo RecordBuilder by copying an existing Builder
+     */
     public static cascading.avro.pojo.EmbeddedPojo.Builder newBuilder(cascading.avro.pojo.EmbeddedPojo.Builder other) {
         return new cascading.avro.pojo.EmbeddedPojo.Builder(other);
     }
@@ -146,8 +148,8 @@ public class EmbeddedPojo extends org.apache.avro.specific.SpecificRecordBase im
     /**
      * RecordBuilder for EmbeddedPojo instances.
      */
-    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EmbeddedPojo> implements
-            org.apache.avro.data.RecordBuilder<EmbeddedPojo> {
+    public static class Builder extends org.apache.avro.specific.SpecificRecordBuilderBase<EmbeddedPojo>
+            implements org.apache.avro.data.RecordBuilder<EmbeddedPojo> {
 
         private java.lang.CharSequence Age;
         private java.lang.CharSequence City;
