@@ -6,10 +6,10 @@ import org.apache.avro.Schema;
 import org.apache.avro.mapred.AvroJob;
 import org.apache.avro.mapred.AvroSerialization;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.RecordReader;
 import org.apache.hadoop.mapred.InputFormat;
+import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.OutputFormat;
+import org.apache.hadoop.mapred.RecordReader;
 import org.apache.trevni.avro.AvroTrevniInputFormat;
 import org.apache.trevni.avro.AvroTrevniOutputFormat;
 
